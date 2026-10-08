@@ -24,7 +24,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Accept: `node -e "process.exit(require('fs').readFileSync('test/todo.test.js','utf8').includes('editTask')?0:1)" && node --test --experimental-test-coverage --test-coverage-include='src/todo.js' --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 test/todo.test.js`
 - [x] **T2 —** Add the edit hint to `src/index.html`: directly after `<ul id="todo-list"></ul>`, insert `<p id="edit-hint" class="visually-hidden">Press Enter or double-click to edit</p>`; change nothing else
   - Files: `src/index.html`
-  - Accept: `node -e "const h=require('fs').readFileSync('src/index.html','utf8');process.exit(/<p id=\"edit-hint\" class=\"visually-hidden\">Press Enter or double-click to edit<\/p>/.test(h)?0:1)"`
+  - Accept: `node -e "const h=require('fs').readFileSync('src/index.html','utf8');process.exit(/<p id=\"edit-hint\" class=\"visually-hidden\"[^>]*>Press Enter or double-click to edit<\/p>/.test(h)?0:1)"`
 - [x] **T3 —** Add the edit-field styles to `src/styles.css` (plan.md → `index.html` / `styles.css`): a standard `.visually-hidden` utility (clip/1px/absolute pattern); `#todo-list .edit { flex: 1; font: inherit; }` so the edit input takes the text's place at the same font size as the task text (reviewer note); and extend the existing `:focus-visible` rule so it also covers `#todo-list span:focus-visible`. Change no other rule
   - Files: `src/styles.css`
   - Accept: `node -e "const c=require('fs').readFileSync('src/styles.css','utf8');process.exit(/\.visually-hidden\s*\{/.test(c)&&/\.edit\s*\{[^}]*flex:\s*1/.test(c)&&/\.edit\s*\{[^}]*font:\s*inherit/.test(c)&&/span:focus-visible/.test(c)?0:1)"`
@@ -66,19 +66,31 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Accept: `node -e "const s=require('fs').readFileSync('docs/specs/61c68857-let-people-edit-a-task-s-text/spec.md','utf8');const h=s.split('\n## How it works\n')[1];process.exit(h&&/right-click/i.test(h)&&/only that row|only the edited row/i.test(h)&&!/\.m?js\b|\.html|\.css|editTask|editingId|render\(|jsdom|mount/.test(h)?0:1)"`
   - Depends on: T11, T12
 
+- [ ] **T14 —** Verify-round follow-up in `src/app.js` (code review): (a) the edit-field `keydown` handler also returns when `event.repeat`, so holding Enter on the text opens the edit and the auto-repeat does not immediately save and close it; (b) `finishEdit` no longer writes the count text (editing never changes it, and rewriting the `aria-live` region can re-announce it — spec Behaviour 9); (c) replace the stale test that patches `list.replaceChildren` with one that patches the edited `<li>`'s `replaceWith` to dispatch a `focusout` from the still-attached field before replacing, for both Enter and Escape, asserting the text is the saved / original value and no second save happens. Tests whose names contain `held Enter` (start with Enter, then `keydown` Enter with `repeat: true` on the field: field still there, text unchanged) and `count text is not rewritten` (the count's text node is the same object after an edit)
+  - Files: `src/app.js`, `test/app.test.js`
+  - Accept: `node -e "const t=require('fs').readFileSync('test/app.test.js','utf8'),s=require('fs').readFileSync('src/app.js','utf8');const f=s.slice(s.indexOf('function finishEdit'),s.indexOf('function isCurrentEdit'));process.exit(t.includes('held Enter')&&t.includes('count text is not rewritten')&&!f.includes('count.textContent')?0:1)" && node --test --experimental-test-coverage --test-coverage-include='src/app.js' --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 test/app.test.js`
+  - Depends on: T11
+- [ ] **T15 —** Verify-round follow-up in `docs/specs/61c68857-let-people-edit-a-task-s-text/spec.md` → `## How it works` → Divergences only (no line above that section changes; spec auditor + guardian): replace the line naming the plan file with "Otherwise the build matches the plan." and add a divergence line: when the user leaves the field for a control outside the task's row, focus stays where they put it instead of returning to the text (differs from Behaviour 12, which assumes focus always returns). Behavioural terms only, no file names
+  - Files: `docs/specs/61c68857-let-people-edit-a-task-s-text/spec.md`
+  - Accept: `node -e "const s=require('fs').readFileSync('docs/specs/61c68857-let-people-edit-a-task-s-text/spec.md','utf8');const h=s.split('\n## How it works\n')[1];process.exit(h&&!/\.md\b|\.m?js\b|\.html|\.css|editTask|editingId|render\(|jsdom|mount/.test(h)&&/Behaviour 12/.test(h)?0:1)"`
+  - Depends on: T14
+- [ ] **T16 —** Verify-round follow-up (spec auditor, Article VI) in the shipped module `docs/specs/00000000-build-a-basic-to-do-app`: in `spec.md` → How it works → **Display**, qualify "nothing is patched in place" with "except finishing an inline edit, which redraws only that task (see [edit a task's text](../61c68857-let-people-edit-a-task-s-text/spec.md))"; in `contracts/provides.md` → Consumed by, change "Nothing consumes this module; it is the only module in the repo." to "Nothing consumes this module." Change nothing else in either file
+  - Files: `docs/specs/00000000-build-a-basic-to-do-app/spec.md`, `docs/specs/00000000-build-a-basic-to-do-app/contracts/provides.md`
+  - Accept: `node -e "const fs=require('fs');const s=fs.readFileSync('docs/specs/00000000-build-a-basic-to-do-app/spec.md','utf8'),p=fs.readFileSync('docs/specs/00000000-build-a-basic-to-do-app/contracts/provides.md','utf8');process.exit(/patched in place[^\n]*61c68857-let-people-edit-a-task-s-text/.test(s)&&!p.includes('only module in the repo')?0:1)"`
+
 ## Outcome coverage
 
 | Spec outcome | Task |
 |---|---|
-| Edit inline by double-click or Enter on the focused text | T4, T5 |
-| Saving (Enter or leaving the field) updates the task | T1, T6 |
-| Escape cancels and restores the original text | T6 |
+| Edit inline by double-click or Enter on the focused text | T4, T5, T11, T14 |
+| Saving (Enter or leaving the field) updates the task | T1, T6, T10 |
+| Escape cancels and restores the original text | T6, T11 |
 | Saving empty text is ignored, original preserved | T1, T6 |
 | Works for completed and incomplete tasks | T1, T6 |
-| Completed count unchanged by editing | T1, T6 |
-| Keyboard and screen-reader accessible | T2, T3, T4, T5, T6 |
-| Covered by automated tests | T1, T4, T5, T6, T7 |
-| (Edge cases: checkbox / Delete while editing) | T7 |
+| Completed count unchanged by editing | T1, T6, T14 |
+| Keyboard and screen-reader accessible | T2, T3, T4, T5, T6, T10, T12 |
+| Covered by automated tests | T1, T4, T5, T6, T7, T10, T11, T14 |
+| (Edge cases: checkbox / Delete while editing) | T7, T10, T11 |
 
 ## Done when
 
