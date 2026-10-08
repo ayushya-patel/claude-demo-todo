@@ -26,7 +26,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Depends on: T1
 - [ ] **T1b —** In `package.json`'s `test` script, replace the trailing bare directory `test/` with the quoted glob `'test/*.test.js'` (Node 22 treats a bare directory argument to `node --test` as a module path and fails with "Cannot find module"; found during T6); change nothing else
   - Files: `package.json`
-  - Accept: `npm test`
+  - Accept: `node -e "const p=JSON.parse(require('fs').readFileSync('package.json','utf8'));process.exit(p.scripts.test.endsWith(\" 'test/*.test.js'\")&&p.scripts.test.includes('--test-coverage-functions=100')?0:1)"`
   - Depends on: T1a
 - [x] **T2 —** Set `"check": "npm test"` in `.claude/ai-workflow.json`, changing no other field
   - Files: `.claude/ai-workflow.json`
@@ -60,7 +60,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
 - [ ] **T9 —** Append a `## How it works` section to the end of `spec.md` describing the runtime flow that actually shipped (read `src/` and `scripts/serve.mjs`: page load → `mount`, where state lives, add/toggle/delete/render path, count derivation, dev server), plus one line per divergence from plan.md; do not change any existing line of the spec
   - Files: `docs/specs/00000000-build-a-basic-to-do-app/spec.md`
   - Accept: `node -e "const s=require('fs').readFileSync('docs/specs/00000000-build-a-basic-to-do-app/spec.md','utf8');process.exit(/\n## How it works\n[\s\S]*mount/.test(s)?0:1)"`
-  - Depends on: T6, T7
+  - Depends on: T6, T7, T7a, T1b
 
 ## Outcome coverage
 
