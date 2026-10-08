@@ -221,3 +221,103 @@ test('deleting the last remaining task focuses the text input', () => {
   app.deleteButton(0).click();
   assert.equal(app.document.activeElement, app.input);
 });
+
+function keydown(app, target, key) {
+  const event = new app.document.defaultView.KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
+  target.dispatchEvent(event);
+  return event;
+}
+
+function dblclick(app, target) {
+  target.dispatchEvent(new app.document.defaultView.MouseEvent('dblclick', { bubbles: true }));
+}
+
+test('edit mode: double-click replaces the text with a focused input, text selected', () => {
+  const app = setup();
+  app.add('Buy milk');
+  dblclick(app, app.textOf(0));
+  const field = app.list.querySelector('li input.edit');
+  assert.equal(field.value, 'Buy milk');
+  assert.equal(app.items()[0].querySelector('span'), null);
+  assert.equal(app.document.activeElement, field);
+  assert.equal(field.selectionStart, 0);
+  assert.equal(field.selectionEnd, 'Buy milk'.length);
+});
+
+test('edit mode: only the double-clicked task is edited', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  dblclick(app, app.textOf(1));
+  assert.equal(app.list.querySelectorAll('input.edit').length, 1);
+  assert.equal(app.items()[0].querySelector('input.edit'), null);
+  assert.equal(app.items()[1].querySelector('input.edit').value, 'Two');
+});
+
+test('edit mode: Enter on a focused span enters edit mode and is not left to the browser', () => {
+  const app = setup();
+  app.add('Buy milk');
+  app.textOf(0).focus();
+  const event = keydown(app, app.textOf(0), 'Enter');
+  assert.equal(event.defaultPrevented, true);
+  const field = app.list.querySelector('li input.edit');
+  assert.equal(field.value, 'Buy milk');
+  assert.equal(app.document.activeElement, field);
+});
+
+test('edit mode: other keys on the span do nothing', () => {
+  const app = setup();
+  app.add('Buy milk');
+  const event = keydown(app, app.textOf(0), ' ');
+  assert.equal(event.defaultPrevented, false);
+  assert.equal(app.list.querySelector('input.edit'), null);
+  assert.equal(app.textOf(0).textContent, 'Buy milk');
+});
+
+test('edit mode: Enter or double-click away from a span does nothing', () => {
+  const app = setup();
+  app.add('Buy milk');
+  keydown(app, app.checkbox(0), 'Enter');
+  keydown(app, app.deleteButton(0), 'Enter');
+  dblclick(app, app.checkbox(0));
+  dblclick(app, app.items()[0]);
+  assert.equal(app.list.querySelector('input.edit'), null);
+});
+
+test('edit mode: the input has an accessible name from the task text', () => {
+  const app = setup();
+  app.add('Buy milk');
+  dblclick(app, app.textOf(0));
+  const field = app.list.querySelector('input.edit');
+  assert.equal(field.getAttribute('aria-label'), 'Edit task: Buy milk');
+  assert.equal(field.type, 'text');
+});
+
+test('edit mode: markup in the text stays plain text in the input value', () => {
+  const app = setup();
+  app.add('<img src=x onerror=alert(1)><b>bold</b>');
+  dblclick(app, app.textOf(0));
+  assert.equal(app.list.querySelectorAll('img, b').length, 0);
+  assert.equal(app.list.querySelector('input.edit').value, '<img src=x onerror=alert(1)><b>bold</b>');
+});
+
+test('edit mode: a change event from the edit input does not toggle the task', () => {
+  const app = setup();
+  app.add('Buy milk');
+  dblclick(app, app.textOf(0));
+  const field = app.list.querySelector('input.edit');
+  field.dispatchEvent(new app.document.defaultView.Event('change', { bubbles: true }));
+  assert.equal(app.checkbox(0).checked, false);
+  assert.equal(app.count.textContent, '0 of 1 completed');
+  assert.equal(app.list.querySelector('input.edit'), field);
+});
+
+test('edit mode: works on a completed task and keeps the count', () => {
+  const app = setup();
+  app.add('Buy milk');
+  app.checkbox(0).click();
+  dblclick(app, app.textOf(0));
+  assert.equal(app.list.querySelector('input.edit').value, 'Buy milk');
+  assert.equal(app.checkbox(0).checked, true);
+  assert.equal(app.count.textContent, '1 of 1 completed');
+});
