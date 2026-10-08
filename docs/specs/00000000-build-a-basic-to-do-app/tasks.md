@@ -76,10 +76,14 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `scripts/serve.mjs`
   - Accept: `node -e "const s=require('fs').readFileSync('scripts/serve.mjs','utf8');process.exit(/listen\([^)]*'127\.0\.0\.1'/.test(s)?0:1)"`
   - Depends on: T10
-- [ ] **T13 —** Remove the unused `root` parameter of `createServer` in `scripts/serve.mjs` (no caller passes it; use the `src/` directory constant directly)
+- [x] **T13 —** Remove the unused `root` parameter of `createServer` in `scripts/serve.mjs` (no caller passes it; use the `src/` directory constant directly)
   - Files: `scripts/serve.mjs`
   - Accept: `node -e "const s=require('fs').readFileSync('scripts/serve.mjs','utf8');process.exit(/createServer\(\s*\)/.test(s)?0:1)" && node --test test/serve.test.js`
   - Depends on: T12
+- [ ] **T13a —** Remove the unused `join` import from `node:path` in `scripts/serve.mjs` (left from T7; found during T13)
+  - Files: `scripts/serve.mjs`
+  - Accept: `node -e "const s=require('fs').readFileSync('scripts/serve.mjs','utf8');process.exit(/\bjoin\b/.test(s)?1:0)" && node --test test/serve.test.js`
+  - Depends on: T13
 - [x] **T14 —** Keep keyboard focus after re-render in `src/app.js`: after a toggle, focus that task's checkbox; after a delete, focus the Delete button of the task that took its place (the next one, else the previous one), or the text input when the list is empty; add jsdom tests in `test/app.test.js` asserting `document.activeElement` in all three cases, keeping 100 % coverage of `src/app.js`
   - Files: `src/app.js`, `test/app.test.js`
   - Accept: `node -e "process.exit(require('fs').readFileSync('test/app.test.js','utf8').includes('activeElement')?0:1)" && node --test --experimental-test-coverage --test-coverage-include='src/app.js' --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 test/app.test.js`

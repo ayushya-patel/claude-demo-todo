@@ -16,7 +16,7 @@ function notFound(res) {
   res.end('Not found');
 }
 
-function resolveInside(root, urlPath) {
+function resolveInside(urlPath) {
   let decoded;
   try {
     decoded = decodeURIComponent(urlPath);
@@ -26,12 +26,11 @@ function resolveInside(root, urlPath) {
   if (decoded.includes('\0')) {
     return null;
   }
-  const target = resolve(root, '.' + (decoded === '/' ? '/index.html' : decoded));
-  return target.startsWith(root + sep) ? target : null;
+  const target = resolve(SRC_DIR, '.' + (decoded === '/' ? '/index.html' : decoded));
+  return target.startsWith(SRC_DIR + sep) ? target : null;
 }
 
-export function createServer(root = SRC_DIR) {
-  const absoluteRoot = resolve(root);
+export function createServer() {
   return createHttpServer(async (req, res) => {
     let pathname;
     try {
@@ -40,7 +39,7 @@ export function createServer(root = SRC_DIR) {
       notFound(res);
       return;
     }
-    const file = resolveInside(absoluteRoot, pathname);
+    const file = resolveInside(pathname);
     if (!file) {
       notFound(res);
       return;
