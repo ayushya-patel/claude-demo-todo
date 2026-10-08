@@ -28,7 +28,7 @@ on the page and stays in memory.
 
 | Situation | Response |
 |---|---|
-| Unknown path or path outside `src/` (dev server `npm start` only) | 404 |
+| Unknown path, path outside `src/`, malformed request target, bad percent-encoding, or a path containing NUL (dev server `npm start` only) | 404 |
 
 ## Consumed by
 
