@@ -1,23 +1,17 @@
 {
-  "round": 2,
+  "round": 3,
   "options": [
     {
       "key": "a",
-      "name": "Toggle button + charcoal gray",
-      "summary": "Sun/moon icon toggle in top-right; dark mode uses softer charcoal gray background for less eye strain.",
-      "file": "round-2/option-a.html"
+      "name": "High-contrast dark",
+      "summary": "Pure white text on true black (#000000) background for maximum accessibility and contrast.",
+      "file": "round-3/option-a.html"
     },
     {
       "key": "b",
-      "name": "Pure black with toggle",
-      "summary": "Sun/moon emoji toggle in top-right; dark mode uses true black (#000000) background for maximum contrast.",
-      "file": "round-2/option-b.html"
-    },
-    {
-      "key": "c",
-      "name": "System preference (no toggle)",
-      "summary": "Dark mode auto-detects OS settings (prefers-color-scheme); no toggle button needed, cleaner interface.",
-      "file": "round-2/option-c.html"
+      "name": "Dim sepia",
+      "summary": "Warm, muted sepia tones (#2a2415 background, #d4c5a9 text) for a paper-like, eye-friendly evening reading experience.",
+      "file": "round-3/option-b.html"
     }
   ]
 }
