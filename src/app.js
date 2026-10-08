@@ -11,21 +11,22 @@ export function mount(document) {
     const item = document.createElement('li');
     item.dataset.id = String(task.id);
 
-    const label = document.createElement('label');
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.checked = task.done;
+    checkbox.setAttribute('aria-label', task.text);
     const text = document.createElement('span');
     text.textContent = task.text;
+    text.tabIndex = 0;
+    text.setAttribute('aria-describedby', 'edit-hint');
     text.classList.toggle('done', task.done);
-    label.append(checkbox, text);
 
     const remove = document.createElement('button');
     remove.type = 'button';
     remove.textContent = 'Delete';
     remove.setAttribute('aria-label', `Delete ${task.text}`);
 
-    item.append(label, remove);
+    item.append(checkbox, text, remove);
     return item;
   }
 

@@ -185,9 +185,10 @@ test('checkbox and Delete button have accessible names from the task text', () =
   const app = setup();
   app.add('Buy milk');
   assert.equal(app.deleteButton(0).getAttribute('aria-label'), 'Delete Buy milk');
-  const label = app.checkbox(0).closest('label');
-  assert.notEqual(label, null);
-  assert.equal(label.textContent, 'Buy milk');
+  assert.equal(app.checkbox(0).getAttribute('aria-label'), 'Buy milk');
+  assert.equal(app.textOf(0).getAttribute('tabindex'), '0');
+  assert.equal(app.textOf(0).getAttribute('aria-describedby'), 'edit-hint');
+  assert.equal(app.checkbox(0).closest('label'), null);
 });
 
 test('toggling a task keeps focus on that task\'s checkbox', () => {
