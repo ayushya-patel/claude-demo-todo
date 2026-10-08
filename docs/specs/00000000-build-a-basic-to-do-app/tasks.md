@@ -24,6 +24,10 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `package.json`
   - Accept: `node -e "const p=JSON.parse(require('fs').readFileSync('package.json','utf8'));process.exit(p.engines.node==='>=22.13'?0:1)"`
   - Depends on: T1
+- [ ] **T1b —** In `package.json`'s `test` script, replace the trailing bare directory `test/` with the quoted glob `'test/*.test.js'` (Node 22 treats a bare directory argument to `node --test` as a module path and fails with "Cannot find module"; found during T6); change nothing else
+  - Files: `package.json`
+  - Accept: `npm test`
+  - Depends on: T1a
 - [x] **T2 —** Set `"check": "npm test"` in `.claude/ai-workflow.json`, changing no other field
   - Files: `.claude/ai-workflow.json`
   - Accept: `node -e "const c=JSON.parse(require('fs').readFileSync('.claude/ai-workflow.json','utf8'));process.exit(c.check==='npm test'&&c.specs==='docs/specs'?0:1)"`
@@ -38,15 +42,19 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
 - [x] **T5 —** Write `src/styles.css`: theme colours as CSS variables on `:root`; `.done` task text gets `text-decoration: line-through` plus a muted colour from a variable; a `:focus-visible` outline on inputs and buttons; no layout beyond a simple centred column
   - Files: `src/styles.css`
   - Accept: `node -e "const c=require('fs').readFileSync('src/styles.css','utf8');process.exit(/:root\s*\{[^}]*--/.test(c)&&/\.done[^{]*\{[^}]*line-through/.test(c)&&c.includes(':focus-visible')?0:1)"`
-- [ ] **T6 —** Implement `src/app.js` exporting `mount(document)` as described in plan.md → "`app.js` surface" (state array in the closure, form `submit` handler that always clears the input, one delegated `change`/`click` handler on the list keyed by task id, full re-render of list and count from state after every change; each `<li>` holds a checkbox labelled by the task text, the text in an element that gets class `done` when done, and a Delete button with `aria-label="Delete <text>"`) with jsdom integration tests in `test/app.test.js` that load `src/index.html` and cover every case in plan.md → Test strategy → Integration, reaching 100 % line/branch/function coverage of `src/app.js`
+- [x] **T6 —** Implement `src/app.js` exporting `mount(document)` as described in plan.md → "`app.js` surface" (state array in the closure, form `submit` handler that always clears the input, one delegated `change`/`click` handler on the list keyed by task id, full re-render of list and count from state after every change; each `<li>` holds a checkbox labelled by the task text, the text in an element that gets class `done` when done, and a Delete button with `aria-label="Delete <text>"`) with jsdom integration tests in `test/app.test.js` that load `src/index.html` and cover every case in plan.md → Test strategy → Integration, reaching 100 % line/branch/function coverage of `src/app.js`
   - Files: `src/app.js`, `test/app.test.js`
   - Accept: `node --test --experimental-test-coverage --test-coverage-include='src/app.js' --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 test/app.test.js`
   - Depends on: T1, T3, T4
-- [ ] **T7 —** Implement the zero-dependency static dev server `scripts/serve.mjs` (`node:http`, port 8080 by default, serves files from `src/` only, `/` → `index.html`, correct `Content-Type` for `.html`/`.css`/`.js`, unknown path or any path resolving outside `src/` → 404) exporting a function the test can start on port 0, with `test/serve.test.js` asserting `/index.html` → 200 and a `..` traversal request → 404
+- [x] **T7 —** Implement the zero-dependency static dev server `scripts/serve.mjs` (`node:http`, port 8080 by default, serves files from `src/` only, `/` → `index.html`, correct `Content-Type` for `.html`/`.css`/`.js`, unknown path or any path resolving outside `src/` → 404) exporting a function the test can start on port 0, with `test/serve.test.js` asserting `/index.html` → 200 and a `..` traversal request → 404
   - Files: `scripts/serve.mjs`, `test/serve.test.js`
   - Accept: `node --test test/serve.test.js`
   - Depends on: T1, T4
-- [ ] **T8 —** Update `README.md` with how to run the app: `npm install`, `npm start` (then open http://localhost:8080; opening `index.html` from disk does not work because of ES modules) and `npm test`
+- [ ] **T7a —** Make `scripts/serve.mjs` listen on the fixed port 8080 instead of reading `process.env.PORT`, because `contracts/requires.md` → Environment says no variables are read (found during T7)
+  - Files: `scripts/serve.mjs`
+  - Accept: `node -e "const s=require('fs').readFileSync('scripts/serve.mjs','utf8');process.exit(!s.includes('process.env')&&s.includes('8080')?0:1)" && node --test test/serve.test.js`
+  - Depends on: T7
+- [x] **T8 —** Update `README.md` with how to run the app: `npm install`, `npm start` (then open http://localhost:8080; opening `index.html` from disk does not work because of ES modules) and `npm test`
   - Files: `README.md`
   - Accept: `node -e "const r=require('fs').readFileSync('README.md','utf8');process.exit(['npm install','npm start','npm test','localhost:8080'].every(s=>r.includes(s))?0:1)"`
 - [ ] **T9 —** Append a `## How it works` section to the end of `spec.md` describing the runtime flow that actually shipped (read `src/` and `scripts/serve.mjs`: page load → `mount`, where state lives, add/toggle/delete/render path, count derivation, dev server), plus one line per divergence from plan.md; do not change any existing line of the spec
