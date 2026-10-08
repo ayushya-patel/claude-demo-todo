@@ -6,6 +6,7 @@ import {
   removeTask,
   countCompleted,
   formatCount,
+  progress,
 } from '../src/todo.js';
 
 test('addTask appends a new open task', () => {
@@ -124,4 +125,10 @@ test('formatCount formats 0 of 0, 3 of 5 and Y of Y', () => {
   assert.equal(formatCount({ completed: 0, total: 0 }), '0 of 0 completed');
   assert.equal(formatCount({ completed: 3, total: 5 }), '3 of 5 completed');
   assert.equal(formatCount({ completed: 4, total: 4 }), '4 of 4 completed');
+});
+
+test('progress returns 0 for 0 of 0, 0.4 for 2 of 5 and 1 for 5 of 5', () => {
+  assert.equal(progress({ completed: 0, total: 0 }), 0);
+  assert.equal(progress({ completed: 2, total: 5 }), 0.4);
+  assert.equal(progress({ completed: 5, total: 5 }), 1);
 });

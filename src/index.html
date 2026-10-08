@@ -6,14 +6,21 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="blob b1" aria-hidden="true"></div>
+  <div class="blob b2" aria-hidden="true"></div>
+  <div class="blob b3" aria-hidden="true"></div>
   <main>
-    <h1>To-do</h1>
+    <header>
+      <h1>To-do</h1>
+      <div class="ring" id="todo-ring" aria-hidden="true"><span id="todo-ring-label"></span></div>
+    </header>
     <form id="todo-form">
       <label for="todo-input">New task</label>
-      <input id="todo-input" type="text" autocomplete="off">
+      <input id="todo-input" type="text" placeholder="Add a new task…" autocomplete="off">
       <button type="submit">Add</button>
     </form>
     <ul id="todo-list"></ul>
+    <p id="todo-empty" class="empty">Nothing here yet — add your first task above.</p>
     <p id="todo-count" aria-live="polite"></p>
   </main>
   <script type="module">
