@@ -464,3 +464,68 @@ test('focusout from an element other than the edit input does nothing', () => {
   focusout(app, app.checkbox(0));
   assert.equal(app.list.querySelector('input.edit'), field);
 });
+
+function mousedown(app, target) {
+  target.dispatchEvent(new app.document.defaultView.MouseEvent('mousedown', { bubbles: true }));
+}
+
+test('mousedown on the editing row\'s checkbox cancels the edit, then the click toggles the task', () => {
+  const app = setup();
+  app.add('Buy milk');
+  const field = startEditing(app, 0, 'Typed text');
+  mousedown(app, app.checkbox(0));
+  focusout(app, field);
+  app.checkbox(0).click();
+  assert.equal(app.list.querySelector('input.edit'), null);
+  assert.equal(app.textOf(0).textContent, 'Buy milk');
+  assert.equal(app.checkbox(0).checked, true);
+  assert.equal(app.count.textContent, '1 of 1 completed');
+});
+
+test('mousedown on the editing row\'s Delete cancels the edit, then the click deletes the task', () => {
+  const app = setup();
+  app.add('Buy milk');
+  app.add('Walk dog');
+  const field = startEditing(app, 0, 'Typed text');
+  mousedown(app, app.deleteButton(0));
+  focusout(app, field);
+  app.deleteButton(0).click();
+  assert.equal(app.items().length, 1);
+  assert.equal(app.textOf(0).textContent, 'Walk dog');
+  assert.equal(app.list.querySelector('input.edit'), null);
+});
+
+test('mousedown on another row\'s checkbox or Delete leaves the edit in progress and blur still saves', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  const field = startEditing(app, 0, 'Edited');
+  mousedown(app, app.checkbox(1));
+  mousedown(app, app.deleteButton(1));
+  assert.equal(app.list.querySelector('input.edit'), field);
+  focusout(app, field);
+  assert.equal(app.textOf(0).textContent, 'Edited');
+});
+
+test('mousedown on the edit input itself or elsewhere in the row keeps the edit', () => {
+  const app = setup();
+  app.add('Buy milk');
+  const field = startEditing(app, 0, 'Edited');
+  mousedown(app, field);
+  mousedown(app, app.items()[0]);
+  mousedown(app, app.list);
+  assert.equal(app.list.querySelector('input.edit'), field);
+  focusout(app, field);
+  assert.equal(app.textOf(0).textContent, 'Edited');
+});
+
+test('mousedown with no edit in progress changes nothing', () => {
+  const app = setup();
+  app.add('Buy milk');
+  mousedown(app, app.checkbox(0));
+  mousedown(app, app.deleteButton(0));
+  mousedown(app, app.textOf(0));
+  assert.equal(app.items().length, 1);
+  assert.equal(app.checkbox(0).checked, false);
+  assert.equal(app.textOf(0).textContent, 'Buy milk');
+});

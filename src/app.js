@@ -126,6 +126,13 @@ export function mount(document) {
     }
   });
 
+  list.addEventListener('mousedown', (event) => {
+    const control = event.target.closest('button, input[type="checkbox"]');
+    if (control !== null && idOf(control) === editingId) {
+      editingId = null;
+    }
+  });
+
   list.addEventListener('focusout', (event) => {
     if (isCurrentEdit(event.target)) {
       finishEdit(event.target, true);
