@@ -12,11 +12,13 @@ Users report that the "X of Y completed" count displays incorrectly after deleti
 
 - The completed count displays correctly after a user deletes any task, whether it is done or open.
 - The count shows the correct number of remaining done tasks and the correct total remaining tasks.
+- A regression test confirms that deleting a done task updates the count correctly.
 
 ## Out of scope
 
 - Changes to the count format or wording.
 - Changes to when or how often the count updates.
+- Changes to how tasks are stored or their data structure.
 
 ## Constraints
 
@@ -46,5 +48,5 @@ Users report that the "X of Y completed" count displays incorrectly after deleti
 - Add 5 tasks; mark 3 as done; delete one done task. Count should show "2 of 4 completed".
 - Add 3 tasks; mark all 3 as done; delete one. Count should show "2 of 2 completed".
 - Add 2 tasks; mark 1 as done; delete the done task. Count should show "0 of 1 completed".
-- Run `npm test` and confirm all tests pass.
+- Run `npm test` and confirm all tests pass, including a new regression test that covers deleting a done task and verifying the count updates.
 - Test in a browser to confirm the count updates visibly and correctly after each delete action.
