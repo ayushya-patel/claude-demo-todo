@@ -17,9 +17,13 @@ Ids are `T<number>`, with an optional letter (`T9a`) for a follow-up found mid-b
 ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Files:`, `Accept:` and
 `Depends on:` as written below, and `Files: none` for a task that touches no file.
 
-- [ ] **T1 —** Create the npm project: `package.json` with `"type": "module"`, `"engines": { "node": ">=22.8" }`, `"private": true`, devDependency `jsdom`, script `start` = `node scripts/serve.mjs`, and script `test` = `node --test --experimental-test-coverage --test-coverage-include='src/**/*.js' --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 test/` (exactly as in plan.md → Entry points); run `npm install` to produce `package-lock.json`; `.gitignore` lists `node_modules/` and `coverage/`
+- [x] **T1 —** Create the npm project: `package.json` with `"type": "module"`, `"engines": { "node": ">=22.8" }`, `"private": true`, devDependency `jsdom`, script `start` = `node scripts/serve.mjs`, and script `test` = `node --test --experimental-test-coverage --test-coverage-include='src/**/*.js' --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 test/` (exactly as in plan.md → Entry points); run `npm install` to produce `package-lock.json`; `.gitignore` lists `node_modules/` and `coverage/`
   - Files: `package.json`, `package-lock.json`, `.gitignore`
   - Accept: `npm ls jsdom && node -e "const p=JSON.parse(require('fs').readFileSync('package.json','utf8'));process.exit(p.type==='module'&&p.scripts.start==='node scripts/serve.mjs'&&p.scripts.test.includes('--test-coverage-branches=100')&&!p.dependencies?0:1)"`
+- [ ] **T1a —** Raise `"engines".node` in `package.json` from `>=22.8` to `>=22.13`, because the installed devDependency jsdom 29 requires Node `^22.13` (found during T1); change nothing else in the file
+  - Files: `package.json`
+  - Accept: `node -e "const p=JSON.parse(require('fs').readFileSync('package.json','utf8'));process.exit(p.engines.node==='>=22.13'?0:1)"`
+  - Depends on: T1
 - [ ] **T2 —** Set `"check": "npm test"` in `.claude/ai-workflow.json`, changing no other field
   - Files: `.claude/ai-workflow.json`
   - Accept: `node -e "const c=JSON.parse(require('fs').readFileSync('.claude/ai-workflow.json','utf8'));process.exit(c.check==='npm test'&&c.specs==='docs/specs'?0:1)"`
@@ -28,10 +32,10 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `src/todo.js`, `test/todo.test.js`
   - Accept: `node --test --experimental-test-coverage --test-coverage-include='src/todo.js' --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 test/todo.test.js`
   - Depends on: T1
-- [ ] **T4 —** Write the page markup `src/index.html`: `<form id="todo-form">` with a visible `<label for="todo-input">`, `<input id="todo-input">` and `<button type="submit">Add</button>`; an empty `<ul id="todo-list">`; a count element `<p id="todo-count" aria-live="polite">`; links `styles.css` and loads `app.js` with `<script type="module">` that imports `mount` from `./app.js` and calls `mount(document)` (no inline logic beyond that call)
+- [x] **T4 —** Write the page markup `src/index.html`: `<form id="todo-form">` with a visible `<label for="todo-input">`, `<input id="todo-input">` and `<button type="submit">Add</button>`; an empty `<ul id="todo-list">`; a count element `<p id="todo-count" aria-live="polite">`; links `styles.css` and loads `app.js` with `<script type="module">` that imports `mount` from `./app.js` and calls `mount(document)` (no inline logic beyond that call)
   - Files: `src/index.html`
   - Accept: `node -e "const h=require('fs').readFileSync('src/index.html','utf8');process.exit(['id=\"todo-form\"','id=\"todo-input\"','for=\"todo-input\"','id=\"todo-list\"','id=\"todo-count\"','aria-live=\"polite\"','type=\"module\"','styles.css'].every(s=>h.includes(s))?0:1)"`
-- [ ] **T5 —** Write `src/styles.css`: theme colours as CSS variables on `:root`; `.done` task text gets `text-decoration: line-through` plus a muted colour from a variable; a `:focus-visible` outline on inputs and buttons; no layout beyond a simple centred column
+- [x] **T5 —** Write `src/styles.css`: theme colours as CSS variables on `:root`; `.done` task text gets `text-decoration: line-through` plus a muted colour from a variable; a `:focus-visible` outline on inputs and buttons; no layout beyond a simple centred column
   - Files: `src/styles.css`
   - Accept: `node -e "const c=require('fs').readFileSync('src/styles.css','utf8');process.exit(/:root\s*\{[^}]*--/.test(c)&&/\.done[^{]*\{[^}]*line-through/.test(c)&&c.includes(':focus-visible')?0:1)"`
 - [ ] **T6 —** Implement `src/app.js` exporting `mount(document)` as described in plan.md → "`app.js` surface" (state array in the closure, form `submit` handler that always clears the input, one delegated `change`/`click` handler on the list keyed by task id, full re-render of list and count from state after every change; each `<li>` holds a checkbox labelled by the task text, the text in an element that gets class `done` when done, and a Delete button with `aria-label="Delete <text>"`) with jsdom integration tests in `test/app.test.js` that load `src/index.html` and cover every case in plan.md → Test strategy → Integration, reaching 100 % line/branch/function coverage of `src/app.js`

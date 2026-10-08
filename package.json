@@ -1,0 +1,16 @@
+{
+  "name": "claude-demo-todo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.8"
+  },
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "test": "node --test --experimental-test-coverage --test-coverage-include='src/**/*.js' --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 test/"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1"
+  }
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>To-do</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <h1>To-do</h1>
+    <form id="todo-form">
+      <label for="todo-input">New task</label>
+      <input id="todo-input" type="text" autocomplete="off">
+      <button type="submit">Add</button>
+    </form>
+    <ul id="todo-list"></ul>
+    <p id="todo-count" aria-live="polite"></p>
+  </main>
+  <script type="module">
+    import { mount } from './app.js';
+
+    mount(document);
+  </script>
+</body>
+</html>
