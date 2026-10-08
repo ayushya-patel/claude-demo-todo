@@ -120,7 +120,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
 
 ### From verify round 2 (code-reviewer)
 
-- [ ] **T22 —** Make `serves when run directly` in `test/serve.test.js` independent of machine state: before spawning, try to listen on `127.0.0.1:8080` and close it; if that fails, `t.skip('port 8080 in use')`; also clear the startup timer on the child's `error` and `exit` paths
+- [x] **T22 —** Make `serves when run directly` in `test/serve.test.js` independent of machine state: before spawning, try to listen on `127.0.0.1:8080` and close it; if that fails, `t.skip('port 8080 in use')`; also clear the startup timer on the child's `error` and `exit` paths
   - Files: `test/serve.test.js`
   - Accept: `node -e "process.exit(require('fs').readFileSync('test/serve.test.js','utf8').includes('port 8080 in use')?0:1)" && node --test test/serve.test.js`
 

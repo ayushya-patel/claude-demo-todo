@@ -2,6 +2,7 @@ import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { request } from 'node:http';
+import { createServer as createNetServer } from 'node:net';
 import { fileURLToPath } from 'node:url';
 import { createServer } from '../scripts/serve.mjs';
 
@@ -70,13 +71,28 @@ test('malformed request target', async () => {
 });
 
 test('serves when run directly', async (t) => {
+  const portFree = await new Promise((resolve) => {
+    const probe = createNetServer();
+    probe.once('error', () => resolve(false));
+    probe.listen(8080, '127.0.0.1', () => probe.close(() => resolve(true)));
+  });
+  if (!portFree) {
+    t.skip('port 8080 in use');
+    return;
+  }
   const script = fileURLToPath(new URL('../scripts/serve.mjs', import.meta.url));
   const child = spawn(process.execPath, [script], { stdio: ['ignore', 'pipe', 'inherit'] });
   t.after(() => child.kill());
   await new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error('no startup line within 5s')), 5000);
-    child.once('error', reject);
-    child.once('exit', () => reject(new Error('server exited before starting')));
+    child.once('error', (err) => {
+      clearTimeout(timer);
+      reject(err);
+    });
+    child.once('exit', () => {
+      clearTimeout(timer);
+      reject(new Error('server exited before starting'));
+    });
     child.stdout.once('data', () => {
       clearTimeout(timer);
       resolve();
