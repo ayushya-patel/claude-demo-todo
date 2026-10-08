@@ -57,7 +57,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
 - [x] **T8 —** Update `README.md` with how to run the app: `npm install`, `npm start` (then open http://localhost:8080; opening `index.html` from disk does not work because of ES modules) and `npm test`
   - Files: `README.md`
   - Accept: `node -e "const r=require('fs').readFileSync('README.md','utf8');process.exit(['npm install','npm start','npm test','localhost:8080'].every(s=>r.includes(s))?0:1)"`
-- [ ] **T9 —** Append a `## How it works` section to the end of `spec.md` describing the runtime flow that actually shipped (read `src/` and `scripts/serve.mjs`: page load → `mount`, where state lives, add/toggle/delete/render path, count derivation, dev server), plus one line per divergence from plan.md; do not change any existing line of the spec
+- [x] **T9 —** Append a `## How it works` section to the end of `spec.md` describing the runtime flow that actually shipped (read `src/` and `scripts/serve.mjs`: page load → `mount`, where state lives, add/toggle/delete/render path, count derivation, dev server), plus one line per divergence from plan.md; do not change any existing line of the spec
   - Files: `docs/specs/00000000-build-a-basic-to-do-app/spec.md`
   - Accept: `node -e "const s=require('fs').readFileSync('docs/specs/00000000-build-a-basic-to-do-app/spec.md','utf8');process.exit(/\n## How it works\n[\s\S]*mount/.test(s)?0:1)"`
   - Depends on: T6, T7, T7a, T1b
