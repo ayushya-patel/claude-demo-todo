@@ -442,19 +442,48 @@ test('other keys in the edit input do nothing, and keys outside it are ignored',
   assert.equal(app.textOf(0), null);
 });
 
-test('cancels without saving when focusout fires while the input is still attached during render', () => {
+function focusoutBeforeReplace(app, field) {
+  const item = field.closest('li');
+  const replaceWith = item.replaceWith.bind(item);
+  item.replaceWith = (...nodes) => {
+    field.value = 'Stale';
+    focusout(app, field);
+    replaceWith(...nodes);
+  };
+}
+
+test('Enter saves once when focusout fires while the field is still attached during the row swap', () => {
   const app = setup();
   app.add('Buy milk');
   const field = startEditing(app, 0, 'Typed text');
-  const replaceChildren = app.list.replaceChildren.bind(app.list);
-  app.list.replaceChildren = (...nodes) => {
-    focusout(app, field);
-    replaceChildren(...nodes);
-  };
+  focusoutBeforeReplace(app, field);
+  keydown(app, field, 'Enter');
+  app.add('Another');
+  assert.equal(app.textOf(0).textContent, 'Typed text');
+  assert.equal(app.list.querySelector('input.edit'), null);
+});
+
+test('Escape cancels without saving when focusout fires while the field is still attached during the row swap', () => {
+  const app = setup();
+  app.add('Buy milk');
+  const field = startEditing(app, 0, 'Typed text');
+  focusoutBeforeReplace(app, field);
   keydown(app, field, 'Escape');
   app.add('Another');
   assert.equal(app.textOf(0).textContent, 'Buy milk');
   assert.equal(app.list.querySelector('input.edit'), null);
+});
+
+test('held Enter: the auto-repeat that follows Enter on the span does not save or close the edit', () => {
+  const app = setup();
+  app.add('Buy milk');
+  app.textOf(0).focus();
+  keydown(app, app.textOf(0), 'Enter');
+  const field = app.list.querySelector('input.edit');
+  keydown(app, field, 'Enter', { repeat: true });
+  assert.equal(app.list.querySelector('input.edit'), field);
+  assert.equal(field.value, 'Buy milk');
+  assert.equal(app.textOf(0), null);
 });
 
 test('focusout from an element other than the edit input does nothing', () => {
@@ -558,16 +587,18 @@ test('other row: blurring the edit into another row\'s Delete keeps that button,
   assert.equal(app.textOf(0).textContent, 'Edited');
 });
 
-test('finishing an edit updates the count text and rebuilds only the edited row', () => {
+test('finishing an edit: count text is not rewritten, and only the edited row is rebuilt', () => {
   const app = setup();
   app.add('One');
   app.add('Two');
   app.checkbox(1).click();
   const field = startEditing(app, 0, 'Edited');
   const [rowA, rowB] = app.items();
+  const countNode = app.count.firstChild;
   keydown(app, field, 'Enter');
   assert.notEqual(app.items()[0], rowA);
   assert.equal(app.items()[1], rowB);
+  assert.equal(app.count.firstChild, countNode);
   assert.equal(app.count.textContent, '1 of 2 completed');
 });
 

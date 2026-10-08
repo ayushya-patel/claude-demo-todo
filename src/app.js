@@ -66,7 +66,6 @@ export function mount(document) {
       tasks = editTask(tasks, id, value);
     }
     item.replaceWith(renderTask(tasks.find((task) => task.id === id)));
-    count.textContent = formatCount(countCompleted(tasks));
     if (refocus) {
       list.querySelector(`li[data-id="${id}"] span`).focus();
     }
@@ -120,7 +119,7 @@ export function mount(document) {
   });
 
   list.addEventListener('keydown', (event) => {
-    if (event.isComposing || !isCurrentEdit(event.target)) {
+    if (event.isComposing || event.repeat || !isCurrentEdit(event.target)) {
       return;
     }
     if (event.key === 'Enter') {

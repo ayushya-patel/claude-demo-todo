@@ -34,4 +34,4 @@ on the page and stays in memory.
 
 | Module | Depends on | Why |
 |---|---|---|
-| — | — | Nothing consumes this module; it is the only module in the repo. |
+| — | — | Nothing consumes this module. |

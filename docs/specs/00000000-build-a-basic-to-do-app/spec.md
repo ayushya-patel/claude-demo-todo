@@ -90,7 +90,7 @@ Detail lives in `./contracts/` — `provides.md` and `requires.md`.
 - Pressing a task's Delete button: that task is removed, and focus moves to the Delete button now at the removed task's position (the previous task's when the last one was removed), or to the text input when the list is empty.
 - A task is always identified by its identifier, never by its position in the list; an unknown identifier changes nothing.
 
-**Display.** After every change the whole list is rebuilt from the task list; nothing is patched in place. Each task shows a labelled checkbox, its text (shown as plain text, struck through when done) and a Delete button labelled with that task's text.
+**Display.** After every change the whole list is rebuilt from the task list; nothing is patched in place, except finishing an inline edit, which redraws only that task (see [edit a task's text](../61c68857-let-people-edit-a-task-s-text/spec.md)). Each task shows a labelled checkbox, its text (shown as plain text, struck through when done) and a Delete button labelled with that task's text.
 
 **Count.** The count is not stored. After every change it is recomputed from the task list and shown as, for example, `3 of 5 completed`, so it cannot drift from the list.
 
