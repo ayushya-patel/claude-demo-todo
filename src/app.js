@@ -46,8 +46,10 @@ export function mount(document) {
   });
 
   list.addEventListener('change', (event) => {
-    tasks = toggleTask(tasks, idOf(event.target));
+    const id = idOf(event.target);
+    tasks = toggleTask(tasks, id);
     render();
+    list.querySelector(`li[data-id="${id}"] input`).focus();
   });
 
   list.addEventListener('click', (event) => {
@@ -55,8 +57,12 @@ export function mount(document) {
     if (button === null) {
       return;
     }
-    tasks = removeTask(tasks, idOf(button));
+    const id = idOf(button);
+    const index = tasks.findIndex((task) => task.id === id);
+    tasks = removeTask(tasks, id);
     render();
+    const buttons = list.querySelectorAll('button');
+    (buttons[Math.min(index, buttons.length - 1)] ?? input).focus();
   });
 
   render();

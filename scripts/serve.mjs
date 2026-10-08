@@ -33,7 +33,13 @@ function resolveInside(root, urlPath) {
 export function createServer(root = SRC_DIR) {
   const absoluteRoot = resolve(root);
   return createHttpServer(async (req, res) => {
-    const { pathname } = new URL(req.url, 'http://localhost');
+    let pathname;
+    try {
+      ({ pathname } = new URL(req.url, 'http://localhost'));
+    } catch {
+      notFound(res);
+      return;
+    }
     const file = resolveInside(absoluteRoot, pathname);
     if (!file) {
       notFound(res);

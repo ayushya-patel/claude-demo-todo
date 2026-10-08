@@ -179,3 +179,34 @@ test('checkbox and Delete button have accessible names from the task text', () =
   assert.notEqual(label, null);
   assert.equal(label.textContent, 'Buy milk');
 });
+
+test('toggling a task keeps focus on that task\'s checkbox', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.checkbox(1).focus();
+  app.checkbox(1).click();
+  assert.equal(app.document.activeElement, app.checkbox(1));
+});
+
+test('deleting a task focuses the Delete button of the task that took its place', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.add('Three');
+  app.deleteButton(1).focus();
+  app.deleteButton(1).click();
+  assert.equal(app.document.activeElement, app.deleteButton(1));
+  assert.equal(app.textOf(1).textContent, 'Three');
+
+  app.deleteButton(1).click();
+  assert.equal(app.document.activeElement, app.deleteButton(0));
+});
+
+test('deleting the last remaining task focuses the text input', () => {
+  const app = setup();
+  app.add('One');
+  app.deleteButton(0).focus();
+  app.deleteButton(0).click();
+  assert.equal(app.document.activeElement, app.input);
+});

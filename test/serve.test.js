@@ -59,3 +59,8 @@ test('unknown paths and bad encodings are 404', async () => {
   assert.equal(await rawGet('/%00'), 404);
   assert.equal(await rawGet('/%E0%A4%A'), 404);
 });
+
+test('malformed request target', async () => {
+  assert.equal(await rawGet('http://a:b/'), 404);
+  assert.equal(await rawGet('/index.html'), 200);
+});

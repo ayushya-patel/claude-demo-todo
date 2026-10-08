@@ -64,7 +64,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
 
 ### From the whole-diff review
 
-- [ ] **T10 —** Stop a malformed request target from crashing the dev server: in `scripts/serve.mjs` parse `req.url` with `new URL(...)` inside a `try` and answer 404 when it throws; add a raw-request test named `malformed request target` in `test/serve.test.js` with request path `http://a:b/` expecting 404 and the server still answering `/index.html` with 200 afterwards
+- [x] **T10 —** Stop a malformed request target from crashing the dev server: in `scripts/serve.mjs` parse `req.url` with `new URL(...)` inside a `try` and answer 404 when it throws; add a raw-request test named `malformed request target` in `test/serve.test.js` with request path `http://a:b/` expecting 404 and the server still answering `/index.html` with 200 afterwards
   - Files: `scripts/serve.mjs`, `test/serve.test.js`
   - Accept: `node -e "process.exit(require('fs').readFileSync('test/serve.test.js','utf8').includes('malformed request target')?0:1)" && node --test test/serve.test.js`
   - Depends on: T7a
@@ -80,7 +80,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `scripts/serve.mjs`
   - Accept: `node -e "const s=require('fs').readFileSync('scripts/serve.mjs','utf8');process.exit(/createServer\(\s*\)/.test(s)?0:1)" && node --test test/serve.test.js`
   - Depends on: T12
-- [ ] **T14 —** Keep keyboard focus after re-render in `src/app.js`: after a toggle, focus that task's checkbox; after a delete, focus the Delete button of the task that took its place (the next one, else the previous one), or the text input when the list is empty; add jsdom tests in `test/app.test.js` asserting `document.activeElement` in all three cases, keeping 100 % coverage of `src/app.js`
+- [x] **T14 —** Keep keyboard focus after re-render in `src/app.js`: after a toggle, focus that task's checkbox; after a delete, focus the Delete button of the task that took its place (the next one, else the previous one), or the text input when the list is empty; add jsdom tests in `test/app.test.js` asserting `document.activeElement` in all three cases, keeping 100 % coverage of `src/app.js`
   - Files: `src/app.js`, `test/app.test.js`
   - Accept: `node -e "process.exit(require('fs').readFileSync('test/app.test.js','utf8').includes('activeElement')?0:1)" && node --test --experimental-test-coverage --test-coverage-include='src/app.js' --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 test/app.test.js`
   - Depends on: T6
