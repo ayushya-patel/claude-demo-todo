@@ -82,20 +82,25 @@ When a user double-clicks the text span of a task or presses Enter while the tex
 
 ## How it works
 
-**Starting an edit.** Double-clicking a task's text, or pressing Enter while the text has keyboard focus, turns that text into a text field in the same place in the row. The text sits in the Tab order between the task's checkbox and its Delete button. The field opens with focus and with its whole text selected, so typing replaces it. Only one task is edited at a time. Editing works the same for done and not-done tasks.
+**Starting an edit.** Double-clicking a task's text, or pressing Enter while the text has keyboard focus, turns that text into a text field in the same place in the row. The text sits in the Tab order between the task's checkbox and its Delete button. The field opens with focus and with its whole text selected, so typing replaces it. Holding Enter down does not start edit after edit; only the first press counts. Only one task is edited at a time. Editing works the same for done and not-done tasks.
 
 **Saving.** Pressing Enter, or leaving the field in any other way (Tab, or clicking elsewhere on the page), saves. The new text is trimmed before it is stored. The task keeps its place in the list, its identifier and its done status, so the completed count is unchanged by an edit.
 
 **Cancelling.** Pressing Escape discards what was typed and restores the original text.
 
+**Input methods.** While text is being composed with an input method (for example a Japanese or Chinese keyboard), Enter confirms the composition and Escape abandons it; neither saves or cancels the edit.
+
 **Blank text.** If the field is empty or holds only whitespace when saved, the edit is ignored and the original text stays.
 
-**Checkbox and Delete while editing.** Pressing the editing row's checkbox or its Delete button cancels the edit first, without saving, and then does what the control normally does: the checkbox flips the done status, Delete removes the task.
+**Checkbox and Delete.** Pressing the checkbox or Delete button of the row being edited cancels the edit first, without saving, and then does what the control normally does: the checkbox flips the done status, Delete removes the task. Pressing a different row's checkbox or Delete button saves the edit, and that press still does its usual job. A right-click or middle-click on the editing row's checkbox or Delete button does not cancel the edit.
 
-**Focus.** After a save or a cancel, focus returns to the task's text, including when the field was left with Tab. The checkbox and Delete keep their usual focus behaviour from the basic app.
+**Focus.** After Enter or Escape, focus always returns to the task's text. After leaving the field some other way, focus returns to the text only when focus went nowhere or stayed in the same row: Tab or Shift+Tab, or clicking empty space. When the user moves to a control outside the row, such as another row's checkbox or the new-task field, focus stays where they put it. The checkbox and Delete keep their usual focus behaviour from the basic app.
 
-**What screen readers hear.** The task's text is announced together with the hint "Press Enter or double-click to edit"; the hint is not shown on screen. The open field is named "Edit task: " followed by the task's text. The checkbox is named by the task's text, as the Delete button already was.
+**What screen readers hear.** The task's text is announced together with the hint "Press Enter or double-click to edit". The hint is not shown on screen and is not offered when browsing the page, but it is still read out with the text. The open field is named "Edit task: " followed by the task's text. The checkbox is named by the task's text, as the Delete button already was.
 
 **Visible change.** A single click on a task's text no longer toggles the task, because the text is no longer part of the checkbox's label. The checkbox itself still toggles it. This was needed so that a double-click does not toggle the task twice.
 
-**Divergences.** One known limitation. If the user presses the checkbox or Delete and drags the pointer off it before releasing, the edit is cancelled but the field stays on screen, inactive. The text typed in it is not saved, and the list is only redrawn at the next change. Otherwise the build matches `plan.md`.
+**Divergences.**
+- Finishing an edit redraws only that row, not the whole list as the basic app does after other changes.
+- Known limitation: if the user presses the checkbox or Delete button of the row being edited and drags the pointer off it before releasing, the edit is cancelled but the field stays on screen, inactive. The text typed in it is not saved, and the list is only redrawn at the next change.
+- Otherwise the build matches `plan.md`.
