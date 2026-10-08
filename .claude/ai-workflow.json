@@ -1,5 +1,5 @@
 {
-  "check": "",
+  "check": "npm test",
   "format": "none",
   "specs": "docs/specs",
   "code": [

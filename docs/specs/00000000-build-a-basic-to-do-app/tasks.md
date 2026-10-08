@@ -20,15 +20,15 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
 - [x] **T1 —** Create the npm project: `package.json` with `"type": "module"`, `"engines": { "node": ">=22.8" }`, `"private": true`, devDependency `jsdom`, script `start` = `node scripts/serve.mjs`, and script `test` = `node --test --experimental-test-coverage --test-coverage-include='src/**/*.js' --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 test/` (exactly as in plan.md → Entry points); run `npm install` to produce `package-lock.json`; `.gitignore` lists `node_modules/` and `coverage/`
   - Files: `package.json`, `package-lock.json`, `.gitignore`
   - Accept: `npm ls jsdom && node -e "const p=JSON.parse(require('fs').readFileSync('package.json','utf8'));process.exit(p.type==='module'&&p.scripts.start==='node scripts/serve.mjs'&&p.scripts.test.includes('--test-coverage-branches=100')&&!p.dependencies?0:1)"`
-- [ ] **T1a —** Raise `"engines".node` in `package.json` from `>=22.8` to `>=22.13`, because the installed devDependency jsdom 29 requires Node `^22.13` (found during T1); change nothing else in the file
+- [x] **T1a —** Raise `"engines".node` in `package.json` from `>=22.8` to `>=22.13`, because the installed devDependency jsdom 29 requires Node `^22.13` (found during T1); change nothing else in the file
   - Files: `package.json`
   - Accept: `node -e "const p=JSON.parse(require('fs').readFileSync('package.json','utf8'));process.exit(p.engines.node==='>=22.13'?0:1)"`
   - Depends on: T1
-- [ ] **T2 —** Set `"check": "npm test"` in `.claude/ai-workflow.json`, changing no other field
+- [x] **T2 —** Set `"check": "npm test"` in `.claude/ai-workflow.json`, changing no other field
   - Files: `.claude/ai-workflow.json`
   - Accept: `node -e "const c=JSON.parse(require('fs').readFileSync('.claude/ai-workflow.json','utf8'));process.exit(c.check==='npm test'&&c.specs==='docs/specs'?0:1)"`
   - Depends on: T1
-- [ ] **T3 —** Implement the pure task-list logic in `src/todo.js` (exports `addTask`, `toggleTask`, `removeTask`, `countCompleted`, `formatCount` exactly as in plan.md → "`todo.js` surface"; every function returns a new array or a derived value and never mutates its input) with unit tests in `test/todo.test.js` covering every case listed in plan.md → Test strategy → Unit, reaching 100 % line/branch/function coverage of `src/todo.js`
+- [x] **T3 —** Implement the pure task-list logic in `src/todo.js` (exports `addTask`, `toggleTask`, `removeTask`, `countCompleted`, `formatCount` exactly as in plan.md → "`todo.js` surface"; every function returns a new array or a derived value and never mutates its input) with unit tests in `test/todo.test.js` covering every case listed in plan.md → Test strategy → Unit, reaching 100 % line/branch/function coverage of `src/todo.js`
   - Files: `src/todo.js`, `test/todo.test.js`
   - Accept: `node --test --experimental-test-coverage --test-coverage-include='src/todo.js' --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 test/todo.test.js`
   - Depends on: T1
