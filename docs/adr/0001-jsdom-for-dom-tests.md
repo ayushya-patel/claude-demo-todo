@@ -1,6 +1,6 @@
 # 0001. jsdom as the DOM for integration tests
 
-**Status:** Proposed · **Date:** 2026-10-08
+**Status:** Accepted · **Date:** 2026-10-08
 
 ## Context
 

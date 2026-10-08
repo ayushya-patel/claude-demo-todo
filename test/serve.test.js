@@ -1,6 +1,8 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { spawn } from 'node:child_process';
 import { request } from 'node:http';
+import { fileURLToPath } from 'node:url';
 import { createServer } from '../scripts/serve.mjs';
 
 let server;
@@ -65,4 +67,21 @@ test('unknown paths and bad encodings are 404', async () => {
 test('malformed request target', async () => {
   assert.equal(await rawGet('http://a:b/'), 404);
   assert.equal(await rawGet('/index.html'), 200);
+});
+
+test('serves when run directly', async (t) => {
+  const script = fileURLToPath(new URL('../scripts/serve.mjs', import.meta.url));
+  const child = spawn(process.execPath, [script], { stdio: ['ignore', 'pipe', 'inherit'] });
+  t.after(() => child.kill());
+  await new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('no startup line within 5s')), 5000);
+    child.once('error', reject);
+    child.once('exit', () => reject(new Error('server exited before starting')));
+    child.stdout.once('data', () => {
+      clearTimeout(timer);
+      resolve();
+    });
+  });
+  const res = await fetch('http://127.0.0.1:8080/index.html');
+  assert.equal(res.status, 200);
 });

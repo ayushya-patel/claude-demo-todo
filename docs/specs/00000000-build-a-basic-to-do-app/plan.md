@@ -102,6 +102,7 @@ colour via CSS variables) and the checkbox is checked.
 | `scripts/serve.mjs` | new — zero-dependency static server for `src/` (`npm start`) |
 | `test/todo.test.js` | new — unit tests for `todo.js` |
 | `test/app.test.js` | new — jsdom integration tests for `app.js` against `src/index.html` |
+| `test/serve.test.js` | new — dev-server tests |
 | `README.md` | modified — how to run (`npm install`, `npm start`, `npm test`) |
 | `docs/adr/README.md` | new — ADR index |
 | `docs/adr/0001-jsdom-for-dom-tests.md` | new — ADR |
@@ -176,3 +177,11 @@ network requests.
 - Deliberately not tested: CSS appearance (checked in the manual browser run).
 - No end-to-end browser suite: the config has no `"e2e"`, and the spec asks for unit
   and integration tests only.
+
+## Divergences found during the build
+
+- `engines.node` is `>=22.13`, not `>=22.8`: jsdom 29 requires it.
+- The `npm test` script ends in `'test/*.test.js'` instead of `test/`: on Node 22 a bare directory argument is not expanded to the test files.
+- `scripts/serve.mjs` exports `createServer()` so `test/serve.test.js` can start it on a free port; it binds `127.0.0.1` (not all interfaces, dev tool only) and answers 404 for malformed request targets.
+- `src/todo.js` keeps a module-level id counter (`nextId`), so it is not free of global state as Approach says; ids must stay unique across calls. Cheap to reverse, so no ADR.
+- After toggle/delete, `src/app.js` restores keyboard focus (the checkbox, the next Delete button, or the input): added from review, not in the plan's `app.js` surface.
