@@ -1,23 +1,23 @@
 {
-  "round": 1,
+  "round": 2,
   "options": [
     {
       "key": "a",
-      "name": "Toggle button + pure black",
-      "summary": "Moon icon button in the top-right corner; dark mode uses true black background with high contrast.",
-      "file": "round-1/option-a.html"
+      "name": "Toggle button + charcoal gray",
+      "summary": "Sun/moon icon toggle in top-right; dark mode uses softer charcoal gray background for less eye strain.",
+      "file": "round-2/option-a.html"
     },
     {
       "key": "b",
-      "name": "Toggle button + charcoal gray",
-      "summary": "Sun/moon icon toggle in top-right; dark mode uses softer charcoal gray background for less eye strain.",
-      "file": "round-1/option-b.html"
+      "name": "Pure black with toggle",
+      "summary": "Sun/moon emoji toggle in top-right; dark mode uses true black (#000000) background for maximum contrast.",
+      "file": "round-2/option-b.html"
     },
     {
       "key": "c",
-      "name": "System preference (no button)",
-      "summary": "Dark mode automatically follows OS settings (prefers-color-scheme); minimal UI change, no toggle button.",
-      "file": "round-1/option-c.html"
+      "name": "System preference (no toggle)",
+      "summary": "Dark mode auto-detects OS settings (prefers-color-scheme); no toggle button needed, cleaner interface.",
+      "file": "round-2/option-c.html"
     }
   ]
 }
