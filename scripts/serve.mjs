@@ -59,7 +59,7 @@ export function createServer(root = SRC_DIR) {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const port = 8080;
-  createServer().listen(port, () => {
+  createServer().listen(port, '127.0.0.1', () => {
     process.stdout.write(`Serving src/ at http://localhost:${port}\n`);
   });
 }

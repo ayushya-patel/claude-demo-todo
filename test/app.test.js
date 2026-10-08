@@ -48,6 +48,16 @@ test('submit adds a task with an unchecked checkbox and a Delete button, and cle
   assert.equal(app.count.textContent, '0 of 1 completed');
 });
 
+test('adds a task via the Add button', () => {
+  const app = setup();
+  app.input.value = 'Buy milk';
+  app.document.querySelector('#todo-form button[type="submit"]').click();
+  assert.equal(app.items().length, 1);
+  assert.equal(app.textOf(0).textContent, 'Buy milk');
+  assert.equal(app.input.value, '');
+  assert.equal(app.count.textContent, '0 of 1 completed');
+});
+
 test('submit calls preventDefault', () => {
   const app = setup();
   const event = new app.document.defaultView.Event('submit', { bubbles: true, cancelable: true });

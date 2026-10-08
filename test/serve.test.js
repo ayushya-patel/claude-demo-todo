@@ -52,6 +52,8 @@ test('serves css and js with their content types', async () => {
 test('a .. traversal request is 404', async () => {
   assert.equal(await rawGet('/../package.json'), 404);
   assert.equal(await rawGet('/%2e%2e/package.json'), 404);
+  assert.equal(await rawGet('/..%2fpackage.json'), 404);
+  assert.equal(await rawGet('/%2e%2e%2fpackage.json'), 404);
 });
 
 test('unknown paths and bad encodings are 404', async () => {

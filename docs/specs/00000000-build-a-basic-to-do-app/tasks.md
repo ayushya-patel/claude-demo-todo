@@ -68,11 +68,11 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `scripts/serve.mjs`, `test/serve.test.js`
   - Accept: `node -e "process.exit(require('fs').readFileSync('test/serve.test.js','utf8').includes('malformed request target')?0:1)" && node --test test/serve.test.js`
   - Depends on: T7a
-- [ ] **T11 —** Make the traversal test reach the path guard: add raw-request cases `/..%2fpackage.json` and `/%2e%2e%2fpackage.json` expecting 404 to `test/serve.test.js` (these return 200 if the `startsWith` guard in `scripts/serve.mjs` is removed)
+- [x] **T11 —** Make the traversal test reach the path guard: add raw-request cases `/..%2fpackage.json` and `/%2e%2e%2fpackage.json` expecting 404 to `test/serve.test.js` (these return 200 if the `startsWith` guard in `scripts/serve.mjs` is removed)
   - Files: `test/serve.test.js`
   - Accept: `node -e "process.exit(require('fs').readFileSync('test/serve.test.js','utf8').includes('..%2fpackage.json')?0:1)" && node --test test/serve.test.js`
   - Depends on: T10
-- [ ] **T12 —** Bind the dev server to `127.0.0.1` only (`listen(port, '127.0.0.1', ...)` in `scripts/serve.mjs`) so it is not exposed on the LAN, matching the README's `http://localhost:8080`
+- [x] **T12 —** Bind the dev server to `127.0.0.1` only (`listen(port, '127.0.0.1', ...)` in `scripts/serve.mjs`) so it is not exposed on the LAN, matching the README's `http://localhost:8080`
   - Files: `scripts/serve.mjs`
   - Accept: `node -e "const s=require('fs').readFileSync('scripts/serve.mjs','utf8');process.exit(/listen\([^)]*'127\.0\.0\.1'/.test(s)?0:1)"`
   - Depends on: T10
@@ -84,7 +84,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `src/app.js`, `test/app.test.js`
   - Accept: `node -e "process.exit(require('fs').readFileSync('test/app.test.js','utf8').includes('activeElement')?0:1)" && node --test --experimental-test-coverage --test-coverage-include='src/app.js' --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 test/app.test.js`
   - Depends on: T6
-- [ ] **T15 —** Add a test named `adds a task via the Add button` in `test/app.test.js` that adds a task by clicking the form's Add button (`button[type="submit"]`.click()), not by dispatching `submit` directly, and asserts the task is rendered and the input cleared
+- [x] **T15 —** Add a test named `adds a task via the Add button` in `test/app.test.js` that adds a task by clicking the form's Add button (`button[type="submit"]`.click()), not by dispatching `submit` directly, and asserts the task is rendered and the input cleared
   - Files: `test/app.test.js`
   - Accept: `node -e "process.exit(require('fs').readFileSync('test/app.test.js','utf8').includes('Add button')?0:1)" && node --test test/app.test.js`
   - Depends on: T14
