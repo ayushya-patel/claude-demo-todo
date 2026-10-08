@@ -91,3 +91,24 @@ Detail lives in `./contracts/` — `provides.md` and `requires.md`.
 
 - **Provides:** the same single static screen, restyled with a decorative progress ring and an empty-state message; no API, nothing consumes it.
 - **Requires:** no upstream data or external resources; browser glass effects degrade to near-opaque surfaces when unsupported.
+
+## How it works
+
+**Page load.** `src/index.html` loads `styles.css` and calls `mount(document)` from `app.js`. The page holds three decorative background blobs (`aria-hidden`), then one `main` card: a header with the title and the progress ring, the form (a visually hidden "New task" label, the input with the placeholder "Add a new task…", and Add), the empty task list, the empty-state message and the count line. Nothing is loaded from outside the app's folder.
+
+**State.** Unchanged: the task list lives in `mount`'s closure and is replaced, never edited, by `addTask`, `toggleTask` and `removeTask`. The ring value, the ring label and the empty-state visibility are not stored; each is derived from the task list on every render.
+
+**Render cycle.** After every add, toggle or delete, `render()` rebuilds the list and then, from one `countCompleted(tasks)` result, writes the count text (wording unchanged), the ring label (`completed/total`), the ring's `--progress` custom property (`progress(counts)`, a number from 0 to 1, 0 for an empty list) and `empty.hidden` (true when there is at least one task). The count, ring and message therefore change at the same moment. Focus handling after toggle and delete is as before; the Delete button also carries the class `del`.
+
+**Ring.** `.ring` is a CSS `conic-gradient` that fills `--progress` of a turn with the accent colour over a pale track. Its label sits in an inner disc and the whole ring is `aria-hidden`, so `#todo-count` (`aria-live="polite"`) stays the one accessible count.
+
+**Empty state.** `#todo-empty` is a paragraph after the list, never an `li`, so the list holds only tasks. Its visibility is the `hidden` attribute, and `[hidden] { display: none }` keeps `.empty` from overriding it. The empty list's own panel is hidden too, with `#todo-list:empty { display: none }`.
+
+**Styling and fallbacks.** Every colour is a variable in `:root`. The background is four radial gradients with three fixed blurred blobs; `main` is a frosted card (`backdrop-filter`) that scrolls over the still background. The label is hidden with the clip technique, so it still names the input. Long task text wraps (`overflow-wrap: anywhere`) and Delete stays on the right. Below 36rem the card gets side gutters, and the input can shrink so input and Add stay on one row. Where `backdrop-filter` is unsupported, or with `prefers-reduced-transparency: reduce`, the glass variables are redefined to near-opaque white with the same layout. In `forced-colors: active` the checkboxes revert to native appearance, borders use system colours, and the ring uses system colours with `forced-color-adjust: none`. Focus is a 3px outline on the input, checkboxes and buttons.
+
+**Divergences.** Where the build differs from `plan.md`:
+- The task label also got `min-width: 0` (not only the text span), so long text cannot push Delete out of the row.
+- `body { overflow-x: hidden }` stops the blobs causing horizontal scroll; the plan offered it as one of two options.
+- `#todo-list:empty { display: none }` hides the empty list's panel; the plan did not cover it.
+- In forced-colors the `:root` colour variables are switched to system colours, the ring gets `forced-color-adjust: none`, and the checkbox check mark is removed (the native checkbox draws its own); the plan only named the ring colours, borders and checkbox appearance.
+- After code review the focus ring is `#0062cc` (plan: `#007aff`), the unchecked checkbox ring `#77777c` and the placeholder `#68686c` (plan: `#6c6c70`), for contrast.

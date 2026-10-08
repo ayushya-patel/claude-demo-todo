@@ -43,7 +43,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
 - [x] **T5 —** In `docs/specs/00000000-build-a-basic-to-do-app/contracts/provides.md`, change the `/` and `/index.html` row's "Returns or renders" cell to also mention the decorative progress ring (`completed/total`) and the empty-state message when there are no tasks; change nothing else
   - Files: `docs/specs/00000000-build-a-basic-to-do-app/contracts/provides.md`
   - Accept: `grep -q "progress ring" docs/specs/00000000-build-a-basic-to-do-app/contracts/provides.md && grep -q "empty-state" docs/specs/00000000-build-a-basic-to-do-app/contracts/provides.md`
-- [ ] **T6 —** Append `## How it works` to `docs/specs/971bd93b-improve-the-to-do-app-s-look/spec.md` per the ai-workflow `flow` skill (`/workspace/ai-workflow/skills/flow/SKILL.md`): describe what shipped in `src/` (render cycle, ring, empty state, CSS fallbacks), and one line per divergence from `plan.md`; do not change any existing section of the spec
+- [x] **T6 —** Append `## How it works` to `docs/specs/971bd93b-improve-the-to-do-app-s-look/spec.md` per the ai-workflow `flow` skill (`/workspace/ai-workflow/skills/flow/SKILL.md`): describe what shipped in `src/` (render cycle, ring, empty state, CSS fallbacks), and one line per divergence from `plan.md`; do not change any existing section of the spec
   - Files: `docs/specs/971bd93b-improve-the-to-do-app-s-look/spec.md`
   - Accept: `grep -q "^## How it works" docs/specs/971bd93b-improve-the-to-do-app-s-look/spec.md`
   - Depends on: T3, T4, T7
