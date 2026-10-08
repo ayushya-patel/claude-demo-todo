@@ -1,12 +1,12 @@
 :root {
   --color-text: #1c1c1e;
   --color-muted: #5c5c61;
-  --color-placeholder: #6c6c70;
+  --color-placeholder: #68686c;
   --color-accent: #007aff;
   --color-accent-text: #0062cc;
   --color-danger: #d70015;
   --color-danger-hover: rgba(215, 0, 21, 0.12);
-  --color-focus: #007aff;
+  --color-focus: #0062cc;
   --color-on-accent: #fff;
 
   --color-bg-base: #eef0f8;
@@ -40,7 +40,7 @@
 
   --color-ring-track: rgba(0, 122, 255, 0.15);
   --color-divider: rgba(60, 60, 67, 0.12);
-  --color-check-border: rgba(60, 60, 67, 0.3);
+  --color-check-border: #77777c;
   --color-check-bg: rgba(255, 255, 255, 0.5);
   --color-check-shadow: rgba(0, 122, 255, 0.4);
 }

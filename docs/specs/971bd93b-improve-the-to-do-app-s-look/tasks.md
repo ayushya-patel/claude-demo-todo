@@ -47,7 +47,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `docs/specs/971bd93b-improve-the-to-do-app-s-look/spec.md`
   - Accept: `grep -q "^## How it works" docs/specs/971bd93b-improve-the-to-do-app-s-look/spec.md`
   - Depends on: T3, T4, T7
-- [ ] **T7 —** Raise the three `:root` colours in `src/styles.css` that fall below WCAG AA on the glass (code-review finding): `--color-check-border` (unchecked checkbox ring, now `rgba(60,60,67,.3)` ≈ 1.6:1) to a solid `#77777c` (≥ 3:1 non-text), `--color-focus` from `#007aff` to `#0062cc` (≥ 3:1 at pastel spots, at least as good as before), and the placeholder colour from `#6c6c70` to `#68686c` (≥ 4.5:1); change nothing else
+- [x] **T7 —** Raise the three `:root` colours in `src/styles.css` that fall below WCAG AA on the glass (code-review finding): `--color-check-border` (unchecked checkbox ring, now `rgba(60,60,67,.3)` ≈ 1.6:1) to a solid `#77777c` (≥ 3:1 non-text), `--color-focus` from `#007aff` to `#0062cc` (≥ 3:1 at pastel spots, at least as good as before), and the placeholder colour from `#6c6c70` to `#68686c` (≥ 4.5:1); change nothing else
   - Files: `src/styles.css`
   - Accept: `node -e "const c=require('fs').readFileSync('src/styles.css','utf8');const r=c.match(/:root\s*{[^}]*}/)[0];process.exit(/--color-check-border:\s*#77777c/.test(r)&&/--color-focus:\s*#0062cc/.test(r)&&r.includes('#68686c')&&!r.includes('#6c6c70')?0:1)"`
   - Depends on: T4
