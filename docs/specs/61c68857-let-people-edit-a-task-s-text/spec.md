@@ -82,7 +82,7 @@ When a user double-clicks the text span of a task or presses Enter while the tex
 
 ## How it works
 
-**Starting an edit.** Double-clicking a task's text, or pressing Enter while the text has keyboard focus, turns that text into a text field in the same place in the row. The text sits in the Tab order between the task's checkbox and its Delete button. The field opens with focus and with its whole text selected, so typing replaces it. Holding Enter down does not start edit after edit; only the first press counts. Only one task is edited at a time. Editing works the same for done and not-done tasks.
+**Starting an edit.** Double-clicking a task's text, or pressing Enter while the text has keyboard focus, turns that text into a text field in the same place in the row. The text sits in the Tab order between the task's checkbox and its Delete button. The field opens with focus and with its whole text selected, so typing replaces it. Holding Enter down opens one edit and keeps it open; the repeats from the held key are ignored, so they neither reopen nor save it. Only one task is edited at a time. Editing works the same for done and not-done tasks.
 
 **Saving.** Pressing Enter, or leaving the field in any other way (Tab, or clicking elsewhere on the page), saves. The new text is trimmed before it is stored. The task keeps its place in the list, its identifier and its done status, so the completed count is unchanged by an edit.
 
@@ -103,4 +103,5 @@ When a user double-clicks the text span of a task or presses Enter while the tex
 **Divergences.**
 - Finishing an edit redraws only that row, not the whole list as the basic app does after other changes.
 - Known limitation: if the user presses the checkbox or Delete button of the row being edited and drags the pointer off it before releasing, the edit is cancelled but the field stays on screen, inactive. The text typed in it is not saved, and the list is only redrawn at the next change.
-- Otherwise the build matches `plan.md`.
+- When the user leaves the field for a control outside the task's row, focus stays where they put it instead of returning to the text. This differs from Behaviour 12, which assumes focus always returns to the text.
+- Otherwise the build matches the plan.
