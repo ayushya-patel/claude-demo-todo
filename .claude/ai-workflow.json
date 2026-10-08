@@ -1,0 +1,11 @@
+{
+  "check": "",
+  "format": "none",
+  "specs": "docs/specs",
+  "code": [
+    "src/**"
+  ],
+  "verify_agents": [
+    "ai-workflow:code-reviewer"
+  ]
+}
