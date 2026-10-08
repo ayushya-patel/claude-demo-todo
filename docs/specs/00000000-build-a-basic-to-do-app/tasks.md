@@ -62,6 +62,37 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Accept: `node -e "const s=require('fs').readFileSync('docs/specs/00000000-build-a-basic-to-do-app/spec.md','utf8');process.exit(/\n## How it works\n[\s\S]*mount/.test(s)?0:1)"`
   - Depends on: T6, T7, T7a, T1b
 
+### From the whole-diff review
+
+- [ ] **T10 —** Stop a malformed request target from crashing the dev server: in `scripts/serve.mjs` parse `req.url` with `new URL(...)` inside a `try` and answer 404 when it throws; add a raw-request test named `malformed request target` in `test/serve.test.js` with request path `http://a:b/` expecting 404 and the server still answering `/index.html` with 200 afterwards
+  - Files: `scripts/serve.mjs`, `test/serve.test.js`
+  - Accept: `node -e "process.exit(require('fs').readFileSync('test/serve.test.js','utf8').includes('malformed request target')?0:1)" && node --test test/serve.test.js`
+  - Depends on: T7a
+- [ ] **T11 —** Make the traversal test reach the path guard: add raw-request cases `/..%2fpackage.json` and `/%2e%2e%2fpackage.json` expecting 404 to `test/serve.test.js` (these return 200 if the `startsWith` guard in `scripts/serve.mjs` is removed)
+  - Files: `test/serve.test.js`
+  - Accept: `node -e "process.exit(require('fs').readFileSync('test/serve.test.js','utf8').includes('..%2fpackage.json')?0:1)" && node --test test/serve.test.js`
+  - Depends on: T10
+- [ ] **T12 —** Bind the dev server to `127.0.0.1` only (`listen(port, '127.0.0.1', ...)` in `scripts/serve.mjs`) so it is not exposed on the LAN, matching the README's `http://localhost:8080`
+  - Files: `scripts/serve.mjs`
+  - Accept: `node -e "const s=require('fs').readFileSync('scripts/serve.mjs','utf8');process.exit(/listen\([^)]*'127\.0\.0\.1'/.test(s)?0:1)"`
+  - Depends on: T10
+- [ ] **T13 —** Remove the unused `root` parameter of `createServer` in `scripts/serve.mjs` (no caller passes it; use the `src/` directory constant directly)
+  - Files: `scripts/serve.mjs`
+  - Accept: `node -e "const s=require('fs').readFileSync('scripts/serve.mjs','utf8');process.exit(/createServer\(\s*\)/.test(s)?0:1)" && node --test test/serve.test.js`
+  - Depends on: T12
+- [ ] **T14 —** Keep keyboard focus after re-render in `src/app.js`: after a toggle, focus that task's checkbox; after a delete, focus the Delete button of the task that took its place (the next one, else the previous one), or the text input when the list is empty; add jsdom tests in `test/app.test.js` asserting `document.activeElement` in all three cases, keeping 100 % coverage of `src/app.js`
+  - Files: `src/app.js`, `test/app.test.js`
+  - Accept: `node -e "process.exit(require('fs').readFileSync('test/app.test.js','utf8').includes('activeElement')?0:1)" && node --test --experimental-test-coverage --test-coverage-include='src/app.js' --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 test/app.test.js`
+  - Depends on: T6
+- [ ] **T15 —** Add a test named `adds a task via the Add button` in `test/app.test.js` that adds a task by clicking the form's Add button (`button[type="submit"]`.click()), not by dispatching `submit` directly, and asserts the task is rendered and the input cleared
+  - Files: `test/app.test.js`
+  - Accept: `node -e "process.exit(require('fs').readFileSync('test/app.test.js','utf8').includes('Add button')?0:1)" && node --test test/app.test.js`
+  - Depends on: T14
+- [ ] **T16 —** Update `## How it works` in `spec.md` to match T10–T14: the dev server binds `127.0.0.1`, answers 404 for a malformed request target, `createServer()` takes no argument; focus handling after toggle/delete; and add the divergence line that `todo.js` keeps a module-level id counter (`nextId`) although plan.md → Approach says it has no global state. Edit only lines inside `## How it works`
+  - Files: `docs/specs/00000000-build-a-basic-to-do-app/spec.md`
+  - Accept: `node -e "const s=require('fs').readFileSync('docs/specs/00000000-build-a-basic-to-do-app/spec.md','utf8').split('## How it works')[1];process.exit(s.includes('127.0.0.1')&&s.includes('nextId')&&/focus/i.test(s)&&!s.includes('createServer(root')?0:1)"`
+  - Depends on: T13, T14
+
 ## Outcome coverage
 
 | Spec outcome | Task |
