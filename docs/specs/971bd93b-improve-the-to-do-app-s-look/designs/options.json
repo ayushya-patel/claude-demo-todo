@@ -1,0 +1,23 @@
+{
+  "round": 1,
+  "options": [
+    {
+      "key": "a",
+      "name": "Soft card",
+      "summary": "Calm and modern: the app sits on a white rounded card with a soft shadow, round checkboxes, quiet Delete buttons and a progress ring next to the title.",
+      "file": "option-a.html"
+    },
+    {
+      "key": "b",
+      "name": "Bold header",
+      "summary": "Energetic and colourful: a gradient header band holds the title, input and a progress bar; tasks sit below as roomy rows with square checkboxes.",
+      "file": "option-b.html"
+    },
+    {
+      "key": "c",
+      "name": "Paper notebook",
+      "summary": "Warm and minimal: no card, a serif title on an off-white page, lined rows like a notepad, an underline-style input and a single terracotta accent.",
+      "file": "option-c.html"
+    }
+  ]
+}
