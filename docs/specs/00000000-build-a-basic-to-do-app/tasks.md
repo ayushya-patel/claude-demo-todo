@@ -59,6 +59,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Accept: `node -e "const r=require('fs').readFileSync('README.md','utf8');process.exit(['npm install','npm start','npm test','localhost:8080'].every(s=>r.includes(s))?0:1)"`
 - [x] **T9 —** Append a `## How it works` section to the end of `spec.md` describing the runtime flow that actually shipped (read `src/` and `scripts/serve.mjs`: page load → `mount`, where state lives, add/toggle/delete/render path, count derivation, dev server), plus one line per divergence from plan.md; do not change any existing line of the spec
   - Files: `docs/specs/00000000-build-a-basic-to-do-app/spec.md`
+  - Note: Accept superseded by T18, which rewrote `## How it works` in behavioural terms (Constitution II); T18's Accept is the live check.
   - Accept: `node -e "const s=require('fs').readFileSync('docs/specs/00000000-build-a-basic-to-do-app/spec.md','utf8');process.exit(/\n## How it works\n[\s\S]*mount/.test(s)?0:1)"`
   - Depends on: T6, T7, T7a, T1b
 
@@ -94,6 +95,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Depends on: T14
 - [x] **T16 —** Update `## How it works` in `spec.md` to match T10–T14: the dev server binds `127.0.0.1`, answers 404 for a malformed request target, `createServer()` takes no argument; focus handling after toggle/delete; and add the divergence line that `todo.js` keeps a module-level id counter (`nextId`) although plan.md → Approach says it has no global state. Edit only lines inside `## How it works`
   - Files: `docs/specs/00000000-build-a-basic-to-do-app/spec.md`
+  - Note: Accept superseded by T18, which rewrote `## How it works` in behavioural terms (Constitution II); T18's Accept is the live check.
   - Accept: `node -e "const s=require('fs').readFileSync('docs/specs/00000000-build-a-basic-to-do-app/spec.md','utf8').split('## How it works')[1];process.exit(s.includes('127.0.0.1')&&s.includes('nextId')&&/focus/i.test(s)&&!s.includes('createServer(root')?0:1)"`
   - Depends on: T13, T14
 
@@ -115,6 +117,12 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
 - [x] **T21 —** In `contracts/provides.md` → Status and redirect behaviour, extend the 404 row to also cover a malformed request target, bad percent-encoding and a path containing NUL
   - Files: `docs/specs/00000000-build-a-basic-to-do-app/contracts/provides.md`
   - Accept: `node -e "const s=require('fs').readFileSync('docs/specs/00000000-build-a-basic-to-do-app/contracts/provides.md','utf8');process.exit(/malformed/i.test(s)&&/NUL/.test(s)?0:1)"`
+
+### From verify round 2 (code-reviewer)
+
+- [ ] **T22 —** Make `serves when run directly` in `test/serve.test.js` independent of machine state: before spawning, try to listen on `127.0.0.1:8080` and close it; if that fails, `t.skip('port 8080 in use')`; also clear the startup timer on the child's `error` and `exit` paths
+  - Files: `test/serve.test.js`
+  - Accept: `node -e "process.exit(require('fs').readFileSync('test/serve.test.js','utf8').includes('port 8080 in use')?0:1)" && node --test test/serve.test.js`
 
 ## Outcome coverage
 
