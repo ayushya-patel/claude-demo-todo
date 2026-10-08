@@ -1,4 +1,4 @@
-import { addTask, toggleTask, removeTask, countCompleted, formatCount } from './todo.js';
+import { addTask, toggleTask, removeTask, editTask, countCompleted, formatCount } from './todo.js';
 
 export function mount(document) {
   const form = document.getElementById('todo-form');
@@ -57,6 +57,21 @@ export function mount(document) {
     field.select();
   }
 
+  function finishEdit(field, save) {
+    const id = idOf(field);
+    const value = field.value;
+    editingId = null;
+    if (save) {
+      tasks = editTask(tasks, id, value);
+    }
+    render();
+    list.querySelector(`li[data-id="${id}"] span`).focus();
+  }
+
+  function isCurrentEdit(target) {
+    return target.matches('input.edit') && idOf(target) === editingId;
+  }
+
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     tasks = addTask(tasks, input.value);
@@ -97,6 +112,23 @@ export function mount(document) {
     if (event.key === 'Enter' && event.target.tagName === 'SPAN') {
       event.preventDefault();
       startEdit(idOf(event.target));
+    }
+  });
+
+  list.addEventListener('keydown', (event) => {
+    if (!isCurrentEdit(event.target)) {
+      return;
+    }
+    if (event.key === 'Enter') {
+      finishEdit(event.target, true);
+    } else if (event.key === 'Escape') {
+      finishEdit(event.target, false);
+    }
+  });
+
+  list.addEventListener('focusout', (event) => {
+    if (isCurrentEdit(event.target)) {
+      finishEdit(event.target, true);
     }
   });
 

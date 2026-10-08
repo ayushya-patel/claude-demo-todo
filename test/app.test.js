@@ -321,3 +321,146 @@ test('edit mode: works on a completed task and keeps the count', () => {
   assert.equal(app.checkbox(0).checked, true);
   assert.equal(app.count.textContent, '1 of 1 completed');
 });
+
+function startEditing(app, index, value) {
+  dblclick(app, app.textOf(index));
+  const field = app.list.querySelector('input.edit');
+  if (value !== undefined) {
+    field.value = value;
+  }
+  return field;
+}
+
+function focusout(app, target) {
+  target.dispatchEvent(new app.document.defaultView.FocusEvent('focusout', { bubbles: true }));
+}
+
+test('Enter saves non-blank text and shows a span with it', () => {
+  const app = setup();
+  app.add('Buy milk');
+  const field = startEditing(app, 0, 'Buy oat milk');
+  keydown(app, field, 'Enter');
+  assert.equal(app.list.querySelector('input.edit'), null);
+  assert.equal(app.textOf(0).textContent, 'Buy oat milk');
+});
+
+test('leaving the field (blur) saves the text', () => {
+  const app = setup();
+  app.add('Buy milk');
+  startEditing(app, 0, 'Buy oat milk');
+  app.document.activeElement.blur();
+  assert.equal(app.list.querySelector('input.edit'), null);
+  assert.equal(app.textOf(0).textContent, 'Buy oat milk');
+});
+
+test('saves ignore empty and whitespace-only input and restore the original text', () => {
+  const app = setup();
+  app.add('Buy milk');
+  keydown(app, startEditing(app, 0, ''), 'Enter');
+  assert.equal(app.textOf(0).textContent, 'Buy milk');
+  keydown(app, startEditing(app, 0, '   '), 'Enter');
+  assert.equal(app.textOf(0).textContent, 'Buy milk');
+  startEditing(app, 0, '  ');
+  app.document.activeElement.blur();
+  assert.equal(app.textOf(0).textContent, 'Buy milk');
+  assert.equal(app.list.querySelector('input.edit'), null);
+});
+
+test('Escape cancels and restores the original text', () => {
+  const app = setup();
+  app.add('Buy milk');
+  keydown(app, startEditing(app, 0, 'Something else'), 'Escape');
+  assert.equal(app.list.querySelector('input.edit'), null);
+  assert.equal(app.textOf(0).textContent, 'Buy milk');
+});
+
+test('saves keep a done task done and an open task open, and the count unchanged', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.checkbox(0).click();
+  keydown(app, startEditing(app, 0, 'One edited'), 'Enter');
+  keydown(app, startEditing(app, 1, 'Two edited'), 'Enter');
+  assert.equal(app.checkbox(0).checked, true);
+  assert.equal(app.textOf(0).classList.contains('done'), true);
+  assert.equal(app.checkbox(1).checked, false);
+  assert.equal(app.textOf(1).classList.contains('done'), false);
+  assert.equal(app.count.textContent, '1 of 2 completed');
+});
+
+test('saves and cancels return focus to the task\'s span', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  keydown(app, startEditing(app, 1, 'Two edited'), 'Enter');
+  assert.equal(app.document.activeElement, app.textOf(1));
+  keydown(app, startEditing(app, 1), 'Escape');
+  assert.equal(app.document.activeElement, app.textOf(1));
+});
+
+test('saves update the checkbox and Delete accessible names', () => {
+  const app = setup();
+  app.add('Buy milk');
+  keydown(app, startEditing(app, 0, 'Buy oat milk'), 'Enter');
+  assert.equal(app.checkbox(0).getAttribute('aria-label'), 'Buy oat milk');
+  assert.equal(app.deleteButton(0).getAttribute('aria-label'), 'Delete Buy oat milk');
+});
+
+test('the blur that follows Enter or Escape does not save again', () => {
+  const app = setup();
+  app.add('Buy milk');
+  const entered = startEditing(app, 0, 'First');
+  keydown(app, entered, 'Enter');
+  entered.value = 'Stale';
+  focusout(app, entered);
+  assert.equal(app.textOf(0).textContent, 'First');
+
+  const escaped = startEditing(app, 0, 'Second');
+  keydown(app, escaped, 'Escape');
+  focusout(app, escaped);
+  assert.equal(app.textOf(0).textContent, 'First');
+  assert.equal(app.list.querySelector('input.edit'), null);
+});
+
+test('saves render markup typed into the input as text in the span', () => {
+  const app = setup();
+  app.add('Buy milk');
+  const markup = '<img src=x onerror=alert(1)><b>bold</b>';
+  keydown(app, startEditing(app, 0, markup), 'Enter');
+  assert.equal(app.list.querySelectorAll('img, b').length, 0);
+  assert.equal(app.textOf(0).textContent, markup);
+});
+
+test('other keys in the edit input do nothing, and keys outside it are ignored', () => {
+  const app = setup();
+  app.add('Buy milk');
+  const field = startEditing(app, 0, 'Draft');
+  keydown(app, field, 'a');
+  keydown(app, app.checkbox(0), 'Escape');
+  assert.equal(app.list.querySelector('input.edit'), field);
+  assert.equal(field.value, 'Draft');
+  assert.equal(app.textOf(0), null);
+});
+
+test('cancels without saving when focusout fires while the input is still attached during render', () => {
+  const app = setup();
+  app.add('Buy milk');
+  const field = startEditing(app, 0, 'Typed text');
+  const replaceChildren = app.list.replaceChildren.bind(app.list);
+  app.list.replaceChildren = (...nodes) => {
+    focusout(app, field);
+    replaceChildren(...nodes);
+  };
+  keydown(app, field, 'Escape');
+  app.add('Another');
+  assert.equal(app.textOf(0).textContent, 'Buy milk');
+  assert.equal(app.list.querySelector('input.edit'), null);
+});
+
+test('focusout from an element other than the edit input does nothing', () => {
+  const app = setup();
+  app.add('Buy milk');
+  const field = startEditing(app, 0, 'Draft');
+  focusout(app, app.checkbox(0));
+  assert.equal(app.list.querySelector('input.edit'), field);
+});
