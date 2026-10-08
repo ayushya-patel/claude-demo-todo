@@ -25,8 +25,10 @@ spec names. CSS selects on it. Nothing outside this repo reads it.
 
 ## Input
 
-None. The only input is a click (or Enter/Space) on the toggle button. It stays on
-the page and is never sent or stored.
+None from other modules. The only input is a click (or Enter/Space) on the toggle
+button. The chosen theme is saved in the user's own browser (`localStorage` key
+`todo-theme`, see `requires.md`). It is never sent anywhere. The key is internal to
+this module, and no other module may read or write it.
 
 ## Status and redirect behaviour
 

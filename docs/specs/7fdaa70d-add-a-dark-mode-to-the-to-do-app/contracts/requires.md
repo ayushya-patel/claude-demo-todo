@@ -5,18 +5,20 @@ underneath it.
 
 ## Upstream data
 
-None. The toggle makes no network calls and reads no storage. The theme is client
-state held in the `data-theme` attribute on `<html>` (see `plan.md` → Data).
+No network calls. The theme is client state held in the `data-theme` attribute on
+`<html>`. It is also saved in the browser's `localStorage` so it survives a reload
+(see `plan.md` → Data).
 
 | Client call | Entity | Fields read | Type | If missing or renamed |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| `localStorage.getItem('todo-theme')` on mount; `setItem` on each click | Saved theme preference | the value | `"light"` \| `"dark"` (string) | degrade: missing, unknown or unreadable (storage throws) means light. A failed write is ignored, and the toggle still works for the page's lifetime. |
 
 ## Parsed at
 
 | Source | Parsed in |
 |---|---|
-| The current `data-theme` value on `<html>` (the only state read) | `src/theme.js` → `mountThemeToggle`. Any value other than `dark` is treated as light, so the next click goes to dark. |
+| The saved `todo-theme` value in `localStorage` | `src/theme.js` → `mountThemeToggle`, once on mount. Only exactly `"dark"` gives dark. Anything else is light. |
+| The current `data-theme` value on `<html>` | `src/theme.js` → `mountThemeToggle`, on each click. Any value other than `dark` is treated as light, so the next click goes to dark. |
 
 ## Other modules
 
@@ -30,7 +32,7 @@ build edits.
 
 ## Environment
 
-None.
+None. (`localStorage` is a browser API, not configuration.)
 
 | Variable | Purpose | Required |
 |---|---|---|

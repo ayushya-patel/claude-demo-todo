@@ -1,3 +1,5 @@
+Revision 1: the chosen theme is now saved in `localStorage` and restored on reload (light on first visit or when storage is unavailable).
+
 # Plan — Add dark mode to the to-do app
 
 Derived from `spec.md`. This is where implementation details are allowed.
@@ -24,9 +26,10 @@ where the toggle's JavaScript lives.
 
 ### A. New `src/theme.js` module, mounted from `index.html` (recommended)
 
-`src/theme.js` exports `mountThemeToggle(document)`. It finds the toggle button,
-flips `document.documentElement.dataset.theme` between `light` and `dark` on click,
-and updates the button's icon and `aria-pressed`. The existing inline module script
+`src/theme.js` exports `mountThemeToggle(document)`. On mount it restores the saved
+theme from `localStorage`. It finds the toggle button, flips
+`document.documentElement.dataset.theme` between `light` and `dark` on click, saves
+the new value, and updates the button's icon and `aria-pressed`. The existing inline module script
 in `index.html` imports it and calls it next to `mount(document)`.
 
 - For: this matches the existing pattern (logic in `src/*.js`, exported and called
@@ -62,10 +65,31 @@ Approach A.
 
 **Theme state** is the `data-theme` attribute on `<html>`, set to `"light"` or
 `"dark"`. `src/index.html` ships with `<html lang="en" data-theme="light">`, so the
-page renders light before any JavaScript runs (spec edge case "Page loads → light
-mode is default"). The attribute is the single source of truth: the toggle reads it
-on each click and writes the flipped value. The toggle does not keep a second copy
-of the state in a JS variable.
+page renders light before any JavaScript runs and on a first visit (spec edge case
+"Page loads → light mode is default"). While the page is open, the attribute is the
+single source of truth: the toggle reads it on each click and writes the flipped
+value. The toggle does not keep a second copy of the state in a JS variable.
+
+**Persistence** (reviewer request, Revision 1). The chosen theme is also saved in
+`localStorage` under the key `todo-theme`, as `"light"` or `"dark"`, so it survives
+a reload:
+
+- On mount, `mountThemeToggle` reads `todo-theme`. If it is exactly `"dark"`, it
+  sets `data-theme="dark"`. Any other value, or no value (first visit), leaves the
+  static `light`.
+- On each click, after flipping the attribute, it writes the new value to
+  `todo-theme`.
+- Storage can be unavailable: blocked cookies, some private modes, a full quota, or
+  an opaque origin such as `file://` or `about:blank`. In that case, reading
+  `localStorage` or calling `getItem`/`setItem` throws. Every storage access sits in
+  a `try`/`catch`. A failed read means light. A failed write is ignored, and the
+  toggle still works for the life of the page as before. Nothing is logged and no
+  error reaches the user.
+- How this fits the spec: the Outcome says the toggle state "persists", and the
+  edge case says "Page loads → Light mode is default". The plan reads them as:
+  light is the default when nothing has been chosen yet, and a choice persists
+  across reloads. It does not detect the system preference (that stays out of
+  scope).
 
 **CSS** (`src/styles.css`):
 
@@ -100,7 +124,7 @@ module script also imports `mountThemeToggle` from `./theme.js` and calls it.
 
 | Export | Behaviour |
 |---|---|
-| `mountThemeToggle(document)` | Finds `#theme-toggle` and attaches a `click` handler. On each click it sets `document.documentElement.dataset.theme` to `dark` when it was `light` (and to `light` otherwise), sets the button's text to `☀️` in dark and `🌙` in light, and sets `aria-pressed` to `"true"` in dark and `"false"` in light. It also syncs the icon and `aria-pressed` once from the current attribute on mount. |
+| `mountThemeToggle(document)` | On mount it reads `todo-theme` from `document.defaultView.localStorage` (inside `try`/`catch`) and sets `data-theme="dark"` if the value is `"dark"`. It then syncs the icon and `aria-pressed` from the attribute, finds `#theme-toggle` and attaches a `click` handler. On each click it sets `document.documentElement.dataset.theme` to `dark` when it was not `dark` (and to `light` otherwise), saves the new value to `todo-theme` (inside `try`/`catch`), sets the button's text to `☀️` in dark and `🌙` in light, and sets `aria-pressed` to `"true"` in dark and `"false"` in light. |
 
 Keyboard: the control is a native `<button>`, so Tab reaches it and Enter/Space
 activate it with no extra key handling (spec constraint).
@@ -116,25 +140,17 @@ activate it with no extra key handling (spec constraint).
 | Hard-coded colours (`#333333` hover, `white` button text) | present | "CSS variables define all colours" | Spec: variables only |
 | Toggle position | top-right of the centred content column | "top-right corner of the page" | Design. The spec names the design file as the build's layout, and on narrow screens the two are the same. |
 
-### Persistence: a reading of the spec to confirm
-
-The spec's Outcome says the toggle state "persists and is instantly visible across
-the page". Its edge case says "Page loads → Light mode is default". Read together,
-the plan takes this to mean: the chosen theme holds for the life of the page, and
-every part of the page switches at once. A reload starts in light mode again. The
-plan therefore stores nothing (no `localStorage`). Remembering the choice across
-reloads would contradict the "Page loads → light" edge case. If that is wanted,
-request changes on this plan and it will add `localStorage` with light as the
-first-visit default.
-
-ADR: none. Nothing here is expensive to reverse: there is no dependency, no stored
-data and no new boundary, and the attribute name is the spec's own.
+ADR: none. Nothing here is expensive to reverse. There is no dependency and no new
+system boundary, and the attribute name is the spec's own. The one stored item is
+the `todo-theme` key. It is a single cosmetic preference in the user's own browser.
+If it is renamed or dropped later, the only effect is that each user sees light
+mode once and picks again. No migration is needed.
 
 ## Touched surface
 
 | Path | Change |
 |---|---|
-| `src/theme.js` | new: `mountThemeToggle(document)` |
+| `src/theme.js` | new: `mountThemeToggle(document)`, which restores and saves the theme in `localStorage` |
 | `src/index.html` | modified: `data-theme="light"` on `<html>`, toggle button, input placeholder, imports and calls `mountThemeToggle` |
 | `src/styles.css` | modified: dark-theme variable block, `--color-on-accent`, `color-scheme`, toggle styles, design-file layout and styling |
 | `test/theme.test.js` | new: jsdom tests for the toggle, and checks of the dark palette in `styles.css` |
@@ -149,21 +165,23 @@ data and no new boundary, and the attribute name is the spec's own.
 
 | Data | Owner | Shape | Boundary |
 |---|---|---|---|
-| Current theme | Client state: the `data-theme` attribute on `<html>`, for the page's lifetime | `"light"` or `"dark"` | Only `mountThemeToggle` writes it, and only from a click. Nothing is persisted or read from outside the page. |
+| Current theme (live) | Client state: the `data-theme` attribute on `<html>`, for the page's lifetime | `"light"` or `"dark"` | Only `mountThemeToggle` writes it: once on mount from the saved value, then on each click. |
+| Saved theme | The user's browser: `localStorage` key `todo-theme` on the app's origin | `"light"` or `"dark"` (string) | Only `mountThemeToggle` reads or writes it. It is read once on mount and written on each click. An unknown value is read as light. Nothing leaves the browser. |
 
 ## Consumed contracts
 
-None. The toggle reads no upstream system, no storage and no environment.
+No upstream system and no environment. The only outside input is the browser's
+own `localStorage`.
 
 | Contract | Read from | Parsed at | On shape mismatch |
 |---|---|---|---|
-| — | — | — | — |
+| `todo-theme` value | `window.localStorage` (Web Storage API) | `src/theme.js` → `mountThemeToggle`, on mount | degrade: anything other than `"dark"` (missing, unknown, or storage throws) means light |
 
 ## Entry points
 
 | Entry point | Runs | Behaviour on failure |
 |---|---|---|
-| `src/index.html` (the to-do screen) | Client-side only: static files served by `npm start`, unchanged | No network or async work. If `theme.js` failed to load, the page still renders in light mode from the static `data-theme="light"`. |
+| `src/index.html` (the to-do screen) | Client-side only: static files served by `npm start`, unchanged | No network or async work. If `theme.js` failed to load, the page still renders in light mode from the static `data-theme="light"`. If `localStorage` is unavailable, the page starts light and the toggle works without saving. |
 
 ## Accessibility
 
@@ -186,6 +204,8 @@ None. The toggle reads no upstream system, no storage and no environment.
 |---|---|
 | The design-file restyle (form layout, buttons) breaks existing behaviour or tests | CSS only, with the same element ids and selectors. `npm test` runs `app.test.js` against the edited `index.html`. |
 | Emoji icons render differently across OSes | Accepted: the design uses emoji. State is also exposed via `aria-pressed`, and the icon is not the only cue (the whole palette changes). |
+| A user who saved dark sees a brief light flash on reload, because module scripts run after the document is parsed | Accepted. The page is tiny, so the module runs right after parsing, usually before the first paint. A blocking inline `<head>` script would remove the flash, but it would sit outside the `src/**/*.js` coverage gate (the reason approach C was rejected). |
+| `localStorage` throws (blocked, quota, opaque origin) | Every access is in `try`/`catch`. The page falls back to light and an unsaved toggle. Tested with a jsdom window on `about:blank`, where access throws. |
 | Theme code untested because it sits in HTML | Approach A keeps it in `src/theme.js` under the 100 % coverage gate. |
 | CSS appearance cannot be fully checked in jsdom | Tests assert the dark-palette values in `styles.css` text and the attribute/icon state in the DOM. The look is checked by hand against the design file in a browser (spec Verification 1–7). |
 
@@ -202,6 +222,18 @@ None. The toggle reads no upstream system, no storage and no environment.
     the `done` class is applied.
   - The toggle is reachable by keyboard: it is a `<button>` with no `tabindex`
     removing it.
+- **Persistence (same file; a jsdom window with `url: 'http://localhost/'` so
+  `localStorage` works)**:
+  - A click to dark stores `todo-theme = "dark"`, and a click back stores `"light"`.
+  - A new jsdom page on the same origin with `todo-theme = "dark"` already saved
+    starts in dark after `mountThemeToggle`: `data-theme="dark"`, ☀️ and
+    `aria-pressed="true"`. To simulate a reload, the test seeds the stored value
+    before mounting.
+  - With `todo-theme` missing, or set to an unknown value such as `"blue"`, the
+    page starts light.
+  - Storage unavailable: on a jsdom window at `about:blank` (where `localStorage`
+    access throws), mount starts light and clicks still toggle with no error. A
+    `setItem` that throws (stubbed) does not stop the toggle.
 - **Palette checks (same file, reading `src/styles.css` as text)**: an
   `html[data-theme="dark"]` block defines `#1a1a1a`, `#f0f0f0`, `#a0a0a0`,
   `#404040`, and `#0b5fff` for accent and focus. No hex colour or `white` appears
