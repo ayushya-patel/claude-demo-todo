@@ -24,7 +24,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `package.json`
   - Accept: `node -e "const p=JSON.parse(require('fs').readFileSync('package.json','utf8'));process.exit(p.engines.node==='>=22.13'?0:1)"`
   - Depends on: T1
-- [ ] **T1b —** In `package.json`'s `test` script, replace the trailing bare directory `test/` with the quoted glob `'test/*.test.js'` (Node 22 treats a bare directory argument to `node --test` as a module path and fails with "Cannot find module"; found during T6); change nothing else
+- [x] **T1b —** In `package.json`'s `test` script, replace the trailing bare directory `test/` with the quoted glob `'test/*.test.js'` (Node 22 treats a bare directory argument to `node --test` as a module path and fails with "Cannot find module"; found during T6); change nothing else
   - Files: `package.json`
   - Accept: `node -e "const p=JSON.parse(require('fs').readFileSync('package.json','utf8'));process.exit(p.scripts.test.endsWith(\" 'test/*.test.js'\")&&p.scripts.test.includes('--test-coverage-functions=100')?0:1)"`
   - Depends on: T1a
@@ -50,7 +50,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `scripts/serve.mjs`, `test/serve.test.js`
   - Accept: `node --test test/serve.test.js`
   - Depends on: T1, T4
-- [ ] **T7a —** Make `scripts/serve.mjs` listen on the fixed port 8080 instead of reading `process.env.PORT`, because `contracts/requires.md` → Environment says no variables are read (found during T7)
+- [x] **T7a —** Make `scripts/serve.mjs` listen on the fixed port 8080 instead of reading `process.env.PORT`, because `contracts/requires.md` → Environment says no variables are read (found during T7)
   - Files: `scripts/serve.mjs`
   - Accept: `node -e "const s=require('fs').readFileSync('scripts/serve.mjs','utf8');process.exit(!s.includes('process.env')&&s.includes('8080')?0:1)" && node --test test/serve.test.js`
   - Depends on: T7
