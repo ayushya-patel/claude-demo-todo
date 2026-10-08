@@ -80,7 +80,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `scripts/serve.mjs`
   - Accept: `node -e "const s=require('fs').readFileSync('scripts/serve.mjs','utf8');process.exit(/createServer\(\s*\)/.test(s)?0:1)" && node --test test/serve.test.js`
   - Depends on: T12
-- [ ] **T13a —** Remove the unused `join` import from `node:path` in `scripts/serve.mjs` (left from T7; found during T13)
+- [x] **T13a —** Remove the unused `join` import from `node:path` in `scripts/serve.mjs` (left from T7; found during T13)
   - Files: `scripts/serve.mjs`
   - Accept: `node -e "const s=require('fs').readFileSync('scripts/serve.mjs','utf8');process.exit(/\bjoin\b/.test(s)?1:0)" && node --test test/serve.test.js`
   - Depends on: T13
@@ -92,7 +92,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `test/app.test.js`
   - Accept: `node -e "process.exit(require('fs').readFileSync('test/app.test.js','utf8').includes('Add button')?0:1)" && node --test test/app.test.js`
   - Depends on: T14
-- [ ] **T16 —** Update `## How it works` in `spec.md` to match T10–T14: the dev server binds `127.0.0.1`, answers 404 for a malformed request target, `createServer()` takes no argument; focus handling after toggle/delete; and add the divergence line that `todo.js` keeps a module-level id counter (`nextId`) although plan.md → Approach says it has no global state. Edit only lines inside `## How it works`
+- [x] **T16 —** Update `## How it works` in `spec.md` to match T10–T14: the dev server binds `127.0.0.1`, answers 404 for a malformed request target, `createServer()` takes no argument; focus handling after toggle/delete; and add the divergence line that `todo.js` keeps a module-level id counter (`nextId`) although plan.md → Approach says it has no global state. Edit only lines inside `## How it works`
   - Files: `docs/specs/00000000-build-a-basic-to-do-app/spec.md`
   - Accept: `node -e "const s=require('fs').readFileSync('docs/specs/00000000-build-a-basic-to-do-app/spec.md','utf8').split('## How it works')[1];process.exit(s.includes('127.0.0.1')&&s.includes('nextId')&&/focus/i.test(s)&&!s.includes('createServer(root')?0:1)"`
   - Depends on: T13, T14
