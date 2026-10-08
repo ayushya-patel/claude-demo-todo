@@ -112,3 +112,4 @@ Detail lives in `./contracts/` — `provides.md` and `requires.md`.
 - `#todo-list:empty { display: none }` hides the empty list's panel; the plan did not cover it.
 - In forced-colors the `:root` colour variables are switched to system colours, the ring gets `forced-color-adjust: none`, and the checkbox check mark is removed (the native checkbox draws its own); the plan only named the ring colours, borders and checkbox appearance.
 - After code review the focus ring is `#0062cc` (plan: `#007aff`), the unchecked checkbox ring `#77777c` and the placeholder `#68686c` (plan: `#6c6c70`), for contrast.
+- The body font stack also lists `'SF Pro Text'` (as in the design file); it is a local font name, nothing is loaded.

@@ -27,13 +27,13 @@ Not data, but the look depends on them, so each has a declared fallback (all
 |---|---|
 | `backdrop-filter` | degrade: glass surfaces become near-opaque white (`@supports not`) |
 | Transparency (user set `prefers-reduced-transparency: reduce`) | degrade: glass surfaces near-opaque, same layout |
-| Author colours (`forced-colors: active`) | degrade: native checkboxes and system-colour borders on buttons and input |
+| Author colours (`forced-colors: active`) | degrade: native checkboxes and system-colour borders on buttons and input; the ring switches to system colours with `forced-color-adjust: none` |
 
 ## Other modules
 
 | Module | Depends on | Listed in their provides? |
 |---|---|---|
-| `00000000-build-a-basic-to-do-app` | The screen and its page structure (`#todo-form`, `#todo-input`, `#todo-list`, `#todo-count`), which this change restyles in place | yes — the `/` route row; updated in this build to mention the ring and empty state |
+| `00000000-build-a-basic-to-do-app` | The screen and its page structure (`#todo-form`, `#todo-input`, `#todo-list`, `#todo-count`), which this change restyles in place. If missing or renamed — throw: a renamed or removed id makes `mount` fail and the existing DOM tests go red | yes — the `/` route row; updated in this build to mention the ring and empty state |
 
 ## Environment
 

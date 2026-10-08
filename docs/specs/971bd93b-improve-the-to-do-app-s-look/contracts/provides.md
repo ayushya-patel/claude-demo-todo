@@ -33,4 +33,4 @@ paths).
 
 | Module | Depends on | Why |
 |---|---|---|
-| — | — | Nothing consumes this screen; it is the only module in the repo. |
+| — | — | Nothing consumes this screen. |
