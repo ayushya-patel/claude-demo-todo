@@ -113,14 +113,14 @@ export function mount(document) {
   });
 
   list.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' && event.target.tagName === 'SPAN') {
+    if (event.key === 'Enter' && !event.repeat && event.target.tagName === 'SPAN') {
       event.preventDefault();
       startEdit(idOf(event.target));
     }
   });
 
   list.addEventListener('keydown', (event) => {
-    if (!isCurrentEdit(event.target)) {
+    if (event.isComposing || !isCurrentEdit(event.target)) {
       return;
     }
     if (event.key === 'Enter') {
@@ -131,6 +131,9 @@ export function mount(document) {
   });
 
   list.addEventListener('mousedown', (event) => {
+    if (event.button !== 0) {
+      return;
+    }
     const control = event.target.closest('button, input[type="checkbox"]');
     if (control !== null && idOf(control) === editingId) {
       editingId = null;

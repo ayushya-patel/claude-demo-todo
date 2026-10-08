@@ -222,8 +222,8 @@ test('deleting the last remaining task focuses the text input', () => {
   assert.equal(app.document.activeElement, app.input);
 });
 
-function keydown(app, target, key) {
-  const event = new app.document.defaultView.KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
+function keydown(app, target, key, init = {}) {
+  const event = new app.document.defaultView.KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...init });
   target.dispatchEvent(event);
   return event;
 }
@@ -465,8 +465,8 @@ test('focusout from an element other than the edit input does nothing', () => {
   assert.equal(app.list.querySelector('input.edit'), field);
 });
 
-function mousedown(app, target) {
-  target.dispatchEvent(new app.document.defaultView.MouseEvent('mousedown', { bubbles: true }));
+function mousedown(app, target, init = {}) {
+  target.dispatchEvent(new app.document.defaultView.MouseEvent('mousedown', { bubbles: true, ...init }));
 }
 
 test('mousedown on the editing row\'s checkbox cancels the edit, then the click toggles the task', () => {
@@ -583,4 +583,36 @@ test('focusout focuses the span only when relatedTarget is null or inside the sa
   focusout(app, startEditing(app, 0, 'C'), app.deleteButton(0));
   assert.equal(app.document.activeElement, app.textOf(0));
   assert.equal(app.textOf(0).textContent, 'C');
+});
+
+test('right-click or middle-click mousedown on the editing row\'s checkbox or Delete leaves the edit alive', () => {
+  const app = setup();
+  app.add('Buy milk');
+  const field = startEditing(app, 0, 'Typed text');
+  mousedown(app, app.checkbox(0), { button: 2 });
+  mousedown(app, app.deleteButton(0), { button: 1 });
+  focusout(app, field, app.checkbox(0));
+  assert.equal(app.textOf(0).textContent, 'Typed text');
+});
+
+test('Enter and Escape while composing (IME) neither save nor cancel the edit', () => {
+  const app = setup();
+  app.add('Buy milk');
+  const field = startEditing(app, 0, 'Typed text');
+  const enter = keydown(app, field, 'Enter', { isComposing: true });
+  keydown(app, field, 'Escape', { isComposing: true });
+  assert.equal(enter.defaultPrevented, false);
+  assert.equal(app.list.querySelector('input.edit'), field);
+  keydown(app, field, 'Enter');
+  assert.equal(app.textOf(0).textContent, 'Typed text');
+});
+
+test('Enter on a span with repeat (held key) does not start an edit', () => {
+  const app = setup();
+  app.add('Buy milk');
+  app.textOf(0).focus();
+  keydown(app, app.textOf(0), 'Enter', { repeat: true });
+  assert.equal(app.list.querySelector('input.edit'), null);
+  keydown(app, app.textOf(0), 'Enter');
+  assert.notEqual(app.list.querySelector('input.edit'), null);
 });
