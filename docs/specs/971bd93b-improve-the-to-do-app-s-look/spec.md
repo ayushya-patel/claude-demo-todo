@@ -84,3 +84,10 @@ The to-do app works, but it looks plain and unfinished. The client wants it to f
   - Go through everything with the keyboard only and confirm focus rings are visible.
   - Check at 360px wide.
 - Check contrast with a contrast tool for task text, done text, the count and the empty-state message over the glass card.
+
+## Contracts
+
+Detail lives in `./contracts/` — `provides.md` and `requires.md`.
+
+- **Provides:** the same single static screen, restyled with a decorative progress ring and an empty-state message; no API, nothing consumes it.
+- **Requires:** no upstream data or external resources; browser glass effects degrade to near-opaque surfaces when unsupported.
