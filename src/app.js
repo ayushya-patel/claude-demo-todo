@@ -57,15 +57,19 @@ export function mount(document) {
     field.select();
   }
 
-  function finishEdit(field, save) {
+  function finishEdit(field, save, refocus = true) {
+    const item = field.closest('li');
     const id = idOf(field);
     const value = field.value;
     editingId = null;
     if (save) {
       tasks = editTask(tasks, id, value);
     }
-    render();
-    list.querySelector(`li[data-id="${id}"] span`).focus();
+    item.replaceWith(renderTask(tasks.find((task) => task.id === id)));
+    count.textContent = formatCount(countCompleted(tasks));
+    if (refocus) {
+      list.querySelector(`li[data-id="${id}"] span`).focus();
+    }
   }
 
   function isCurrentEdit(target) {
@@ -135,7 +139,8 @@ export function mount(document) {
 
   list.addEventListener('focusout', (event) => {
     if (isCurrentEdit(event.target)) {
-      finishEdit(event.target, true);
+      const next = event.relatedTarget;
+      finishEdit(event.target, true, next === null || event.target.closest('li').contains(next));
     }
   });
 

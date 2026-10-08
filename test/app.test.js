@@ -331,8 +331,8 @@ function startEditing(app, index, value) {
   return field;
 }
 
-function focusout(app, target) {
-  target.dispatchEvent(new app.document.defaultView.FocusEvent('focusout', { bubbles: true }));
+function focusout(app, target, relatedTarget = null) {
+  target.dispatchEvent(new app.document.defaultView.FocusEvent('focusout', { bubbles: true, relatedTarget }));
 }
 
 test('Enter saves non-blank text and shows a span with it', () => {
@@ -528,4 +528,59 @@ test('mousedown with no edit in progress changes nothing', () => {
   assert.equal(app.items().length, 1);
   assert.equal(app.checkbox(0).checked, false);
   assert.equal(app.textOf(0).textContent, 'Buy milk');
+});
+
+test('other row: blurring the edit into another row\'s checkbox keeps that checkbox, and its click toggles it', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  const field = startEditing(app, 0, 'Edited');
+  const checkboxB = app.checkbox(1);
+  focusout(app, field, checkboxB);
+  assert.equal(checkboxB.isConnected, true);
+  assert.equal(app.textOf(0).textContent, 'Edited');
+  checkboxB.click();
+  assert.equal(app.checkbox(1).checked, true);
+  assert.equal(app.count.textContent, '1 of 2 completed');
+});
+
+test('other row: blurring the edit into another row\'s Delete keeps that button, and its click deletes the row', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  const field = startEditing(app, 0, 'Edited');
+  const deleteB = app.deleteButton(1);
+  focusout(app, field, deleteB);
+  assert.equal(deleteB.isConnected, true);
+  assert.equal(app.textOf(0).textContent, 'Edited');
+  deleteB.click();
+  assert.equal(app.items().length, 1);
+  assert.equal(app.textOf(0).textContent, 'Edited');
+});
+
+test('finishing an edit updates the count text and rebuilds only the edited row', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.checkbox(1).click();
+  const field = startEditing(app, 0, 'Edited');
+  const [rowA, rowB] = app.items();
+  keydown(app, field, 'Enter');
+  assert.notEqual(app.items()[0], rowA);
+  assert.equal(app.items()[1], rowB);
+  assert.equal(app.count.textContent, '1 of 2 completed');
+});
+
+test('focusout focuses the span only when relatedTarget is null or inside the same row', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  focusout(app, startEditing(app, 0, 'A'), app.input);
+  assert.notEqual(app.document.activeElement, app.textOf(0));
+  focusout(app, startEditing(app, 0, 'B'), null);
+  assert.equal(app.document.activeElement, app.textOf(0));
+  app.input.focus();
+  focusout(app, startEditing(app, 0, 'C'), app.deleteButton(0));
+  assert.equal(app.document.activeElement, app.textOf(0));
+  assert.equal(app.textOf(0).textContent, 'C');
 });
