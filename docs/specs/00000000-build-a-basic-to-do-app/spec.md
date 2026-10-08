@@ -70,3 +70,10 @@ Users need a simple, lightweight to-do app to manage tasks in the browser. They 
 - Integration tests verify: input clearing, visual state changes, count accuracy
 - Manual test: add 5 tasks, mark 3 done, verify count shows "3 of 5", delete 1 done task, verify count shows "2 of 4"
 - `npm test` passes with 100% coverage of todo.js and app.js functionality
+
+## Contracts
+
+Detail lives in `./contracts/` — `provides.md` and `requires.md`.
+
+- **Provides:** one static screen (the to-do page); no API, nothing consumes it.
+- **Requires:** nothing upstream — no network calls, no environment variables, no sibling modules.
