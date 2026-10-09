@@ -332,3 +332,93 @@ test('deleting the last remaining task focuses the text input', () => {
   app.deleteButton(0).click();
   assert.equal(app.document.activeElement, app.input);
 });
+
+function pressKey(app, target, key) {
+  target.dispatchEvent(new app.document.defaultView.KeyboardEvent('keydown', { key, bubbles: true }));
+}
+
+test('save and cancel: Enter saves the trimmed text, leaves edit mode and focuses the Edit button', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.checkbox(1).click();
+  app.editButton(1).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = '  Two edited  ';
+  pressKey(app, editor, 'Enter');
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.textOf(1).textContent, 'Two edited');
+  assert.equal(app.textOf(0).textContent, 'One');
+  assert.equal(app.items().length, 2);
+  assert.equal(app.checkbox(1).checked, true);
+  assert.equal(app.textOf(1).classList.contains('done'), true);
+  assert.equal(app.count.textContent, '1 of 2 completed');
+  assert.equal(app.document.activeElement, app.editButton(1));
+});
+
+test('save and cancel: Enter with whitespace-only text keeps edit mode, the text, focus and selection, and shows no alert', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  const window = app.document.defaultView;
+  let alerts = 0;
+  window.alert = () => {
+    alerts += 1;
+  };
+  editor.value = '   ';
+  editor.setSelectionRange(1, 1);
+  pressKey(app, editor, 'Enter');
+  assert.equal(app.list.querySelector('input.edit'), editor);
+  assert.equal(editor.value, '   ');
+  assert.equal(app.document.activeElement, editor);
+  assert.equal(editor.selectionStart, 0);
+  assert.equal(editor.selectionEnd, 3);
+  assert.equal(alerts, 0);
+
+  editor.value = 'One again';
+  pressKey(app, editor, 'Enter');
+  assert.equal(app.textOf(0).textContent, 'One again');
+});
+
+test('save and cancel: Escape restores the original text and focuses the Edit button', () => {
+  const app = setup();
+  app.add('One');
+  app.checkbox(0).click();
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'Changed';
+  pressKey(app, editor, 'Escape');
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.textOf(0).textContent, 'One');
+  assert.equal(app.checkbox(0).checked, true);
+  assert.equal(app.count.textContent, '1 of 1 completed');
+  assert.equal(app.document.activeElement, app.editButton(0));
+});
+
+test('save and cancel: other keys do nothing and keydown outside the edit input is ignored', () => {
+  const app = setup();
+  app.add('One');
+  pressKey(app, app.list, 'Escape');
+  pressKey(app, app.textOf(0), 'Enter');
+  pressKey(app, app.checkbox(0), 'Escape');
+  assert.equal(app.textOf(0).textContent, 'One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'Typing';
+  pressKey(app, editor, 'a');
+  assert.equal(app.list.querySelector('input.edit'), editor);
+  assert.equal(editor.value, 'Typing');
+  assert.equal(app.document.activeElement, editor);
+});
+
+test('save and cancel: edited markup text renders as text', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = '<img src=x onerror=alert(1)><b>bold</b>';
+  pressKey(app, editor, 'Enter');
+  assert.equal(app.list.querySelectorAll('img, b').length, 0);
+  assert.equal(app.textOf(0).textContent, '<img src=x onerror=alert(1)><b>bold</b>');
+});

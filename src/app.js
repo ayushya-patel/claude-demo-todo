@@ -1,4 +1,4 @@
-import { addTask, toggleTask, removeTask, countCompleted, formatCount } from './todo.js';
+import { addTask, toggleTask, editTask, removeTask, countCompleted, formatCount } from './todo.js';
 
 export function mount(document) {
   const form = document.getElementById('todo-form');
@@ -58,6 +58,12 @@ export function mount(document) {
     return Number(target.closest('li').dataset.id);
   }
 
+  function leaveEdit(id) {
+    editingId = null;
+    render();
+    list.querySelector(`li[data-id="${id}"] button[data-action="edit"]`).focus();
+  }
+
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     tasks = addTask(tasks, input.value);
@@ -81,6 +87,24 @@ export function mount(document) {
     }
     editingId = idOf(event.target);
     render();
+  });
+
+  list.addEventListener('keydown', (event) => {
+    if (!event.target.matches('input.edit')) {
+      return;
+    }
+    const id = idOf(event.target);
+    if (event.key === 'Enter') {
+      const next = editTask(tasks, id, event.target.value);
+      if (next === tasks) {
+        event.target.select();
+        return;
+      }
+      tasks = next;
+      leaveEdit(id);
+    } else if (event.key === 'Escape') {
+      leaveEdit(id);
+    }
   });
 
   list.addEventListener('click', (event) => {
