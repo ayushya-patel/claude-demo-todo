@@ -56,3 +56,10 @@ The `render()` function in app.js calculates the count of incomplete tasks (tota
 - Delete a task and verify the title updates correctly
 - Tick all remaining tasks and verify the title shows "To-do - all done"
 - Delete all tasks and verify the title shows "To-do - all done"
+
+## Contracts
+
+Detail lives in `./contracts/` — `provides.md` and `requires.md`.
+
+- **Provides:** no new route or API; the existing to-do screen's tab title shows the remaining count.
+- **Requires:** nothing upstream; extends the to-do app's own code in place.
