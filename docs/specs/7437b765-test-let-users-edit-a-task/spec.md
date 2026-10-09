@@ -89,3 +89,23 @@ Detail lives in `./contracts/` — `provides.md` and `requires.md`.
 - A user can attempt to save an edit with only whitespace and the edit is rejected
 - Focus is correctly managed before, during, and after edit operations
 - Delete and toggle operations continue to work on tasks being edited or adjacent tasks
+
+## How it works
+
+**Entering edit mode.** Double-clicking a task's text, or pressing the Edit button beside it, starts editing that task. The page remembers which task is being edited (a task identifier, or none) next to the task list; this is page memory only and never stored on a task. Only one task is edited at a time, and the list is rebuilt from the task list and that identifier, as for every other change. The edited task shows a single text input holding its current text, labelled `Edit <task text>`, in place of its checkbox, text and buttons, so nothing else about it can be changed while editing. The input receives focus and its whole text is selected.
+
+**Saving.** Enter in the input trims the text and replaces the task's text with it, using `editTask(tasks, id, text)` in `src/todo.js`. Like the other operations, it never changes the existing list. It returns the same list, untouched, when the trimmed text is empty or the identifier is unknown; otherwise it returns a new list with only that task's text replaced (done flag, identifier and other tasks unchanged). The page compares the returned list with the one it passed in to tell a rejected edit from a saved one. On a save, editing ends, the list is rebuilt, and focus goes to that task's Edit button.
+
+**Rejecting a blank edit.** Enter on empty or whitespace-only text saves nothing, shows no message, and keeps edit mode: the input stays focused with its text selected, ready for correction.
+
+**Cancelling.** Escape ends editing without saving, rebuilds the list with the original text, and focuses the task's Edit button. Focus leaving the input also cancels: only that task's row is put back (the rest of the list is not rebuilt, so a click that caused the focus to leave still lands on the other task's checkbox, Edit or Delete button). Focus goes to the Edit button only when it is not moving to another control, so it never steals focus from the control the user chose. Enter and Escape clear the edit state first, so the focus-leaving event that the removed input may still fire is ignored. Other keys do nothing, and Enter in the edit input never submits the add form.
+
+**Unchanged behaviour.** The checkbox only reacts to its own change; the edit input's change event (fired when it loses focus after typing) does not toggle the task. Buttons are told apart by what they do (edit or delete), and after a delete, focus moves among the Delete buttons only. The text is set with `textContent`, `value` or `aria-label` only, so edited markup shows as plain text.
+
+**Styling.** The edit input fills the row (`flex: 1`) using the existing `--color-border` and `--color-text` variables, and the task text takes the remaining width so the buttons stay right-aligned. The visible focus outline is the existing rule for inputs and buttons.
+
+**Divergences from `plan.md`.**
+- The `<label>` around the checkbox and text was removed entirely, not just the text moved out of it; the checkbox is named by its `aria-label` (the task text), and clicking the text no longer toggles the task.
+- The page does not clear the edit state when the edited task disappears from the list. No input is drawn for a missing task and identifiers are never reused, so the stale identifier is harmless, and the branch would be unreachable from the page under the 100 % coverage gate. The planned test "deleting the edited task leaves no input" was therefore not written either.
+- The Edit button's click is handled before the Delete logic in the one delegated `click` listener, and returns early, instead of being a separate branch after it.
+- The spec's "focus moves to the next task's Edit button or the input field if the task was deleted" was not built, as the plan already decided: after a save or cancel the task always exists.
