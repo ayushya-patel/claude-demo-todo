@@ -247,6 +247,15 @@ test('edit mode: the input is focused with its whole text selected', () => {
   assert.equal(editor.selectionEnd, 'Buy milk'.length);
 });
 
+test('edit mode: double-click selects the whole text', () => {
+  const app = setup();
+  app.add('Buy milk');
+  app.textOf(0).dispatchEvent(new app.document.defaultView.MouseEvent('dblclick', { bubbles: true }));
+  const editor = app.list.querySelector('input.edit');
+  assert.equal(editor.selectionStart, 0);
+  assert.equal(editor.selectionEnd, 'Buy milk'.length);
+});
+
 test('edit mode: double-clicking the text does not toggle the task', () => {
   const app = setup();
   app.add('One');

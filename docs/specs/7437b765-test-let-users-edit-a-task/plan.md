@@ -215,3 +215,12 @@ The 100 % line/branch/function coverage gate in `npm test` stays.
 ## Expensive to reverse
 
 Nothing. No ADR is needed for this change.
+
+## Divergences found during the build
+
+- The `<label>` around the checkbox and text was removed entirely, not just the text moved out of it; the checkbox is named by its `aria-label` (the task text), and clicking the text no longer toggles the task.
+- `app.js` does not clear `editingId` when the edited task disappears from `tasks`. No input is drawn for a missing task and ids are never reused, so the stale id is harmless, and the branch would be unreachable from the page under the 100 % coverage gate. The planned test "deleting the edited task leaves no input" (and the T3 test for a removed edited task) was therefore not written either.
+- The Edit button's click is handled before the Delete logic in the one delegated `click` listener, and returns early, instead of being a separate branch after it.
+- The spec's "focus moves to the next task's Edit button or the input field if the task was deleted" was not built, as the plan already decided: after a save or cancel the task always exists.
+- T8–T10 were added from review (verify round 1), not planned: equal row height in both modes (`min-height` on the row, explicit `height` and `box-sizing` on the edit input) so the blur-cancel swap does not shift rows; the edit input's `keydown` returns early on `isComposing` / `keyCode` 229 (IME); the `focusout` handler returns early when `document.hasFocus()` is false (window or tab switch keeps edit mode).
+- `tasks.md` was also touched (it is not in the plan's Touched surface): it holds the task list, its follow-up tasks and their ticks.
