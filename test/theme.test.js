@@ -230,3 +230,7 @@ test('styles.css: no hex colour or white appears outside the variable blocks', (
     assert.doesNotMatch(rule.body, colour, `${rule.selector} uses only var(--…) colours`);
   }
 });
+
+test('styles.css: text input border uses --color-muted', () => {
+  assert.equal(block('input[type="text"]').border, '1px solid var(--color-muted)');
+});

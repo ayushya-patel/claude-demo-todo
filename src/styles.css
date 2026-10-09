@@ -72,7 +72,7 @@ label {
 
 input[type="text"] {
   padding: 0.5rem;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-muted);
   border-radius: 4px;
   background: var(--color-bg);
   color: var(--color-text);

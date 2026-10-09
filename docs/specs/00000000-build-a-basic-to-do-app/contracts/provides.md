@@ -35,4 +35,4 @@ is saved in the browser's own `localStorage` (key `todo-theme`) and never sent a
 
 | Module | Depends on | Why |
 |---|---|---|
-| — | — | Nothing consumes this module; it is the only module in the repo. |
+| 7fdaa70d-add-a-dark-mode-to-the-to-do-app | `/` and `/index.html` (the to-do screen) and the colour variables in `styles.css` | Extends the screen with the theme toggle and the dark palette. |
