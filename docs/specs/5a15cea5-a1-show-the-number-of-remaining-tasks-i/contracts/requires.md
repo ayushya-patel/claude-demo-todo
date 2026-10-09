@@ -26,7 +26,7 @@ ends in `render()`, and on the task model's boolean `done` flag (via `countCompl
 
 | Module | Depends on | Listed in their provides? |
 |---|---|---|
-| — | — | n/a — same code, changed in place; that module's `provides.md` is updated to mention the title |
+| — | — | n/a — same code, changed in place; that module's spec docs are deliberately left unchanged (this folder's `provides.md` describes the new title) |
 
 ## Environment
 

@@ -1,3 +1,5 @@
+Revision 1: the old to-do app spec docs (`docs/specs/00000000-build-a-basic-to-do-app/`) are no longer touched; changes are limited to the app code, its tests and this spec folder.
+
 # Plan — Show the number of remaining tasks in the page title
 
 Derived from `spec.md`. This is where implementation details are allowed.
@@ -84,11 +86,13 @@ function render() {
 | `src/app.js` | modified — `render()` sets `document.title`; import `formatTitle` |
 | `test/todo.test.js` | modified — unit tests for `formatTitle` |
 | `test/app.test.js` | modified — jsdom tests for the title after mount, add, toggle, untick, delete |
-| `docs/specs/00000000-build-a-basic-to-do-app/contracts/provides.md` | modified — the screen's title now reflects remaining tasks |
 | `docs/specs/5a15cea5-a1-show-the-number-of-remaining-tasks-i/contracts/*` | new — this plan's contracts |
 | `docs/specs/5a15cea5-a1-show-the-number-of-remaining-tasks-i/spec.md` | modified — `## Contracts` summary (and `## How it works` when shipped) |
 
-`src/index.html` is not changed.
+`src/index.html` is not changed. Per the reviewer's request, nothing under
+`docs/specs/00000000-build-a-basic-to-do-app/` (the original to-do app spec, plan,
+tasks, contracts or verify report) is edited; this ticket's own spec folder is the only
+documentation that changes.
 
 ## Data
 
