@@ -74,6 +74,13 @@ Currently, once a task is added, its text cannot be changed. Users must delete a
 | Task is deleted by another action during edit | Edit input disappears with no error |
 | Multiple tasks are on screen | Double-click or Edit button affects only the clicked task |
 
+## Contracts
+
+Detail lives in `./contracts/` — `provides.md` and `requires.md`.
+
+- **Provides:** the same single to-do screen, now with in-place editing; no API, nothing consumes it.
+- **Requires:** nothing upstream — no network calls, no environment variables, no sibling modules.
+
 ## Verification
 
 - All changes pass `npm test`
