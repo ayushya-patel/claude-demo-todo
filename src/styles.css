@@ -5,6 +5,19 @@
   --color-border: #c9ced6;
   --color-accent: #0b5fff;
   --color-focus: #0b5fff;
+  --color-on-accent: #ffffff;
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  --color-bg: #1a1a1a;
+  --color-text: #f0f0f0;
+  --color-muted: #a0a0a0;
+  --color-border: #404040;
+  --color-accent: #0b5fff;
+  --color-focus: #0b5fff;
+  --color-on-accent: #ffffff;
+  color-scheme: dark;
 }
 
 body {

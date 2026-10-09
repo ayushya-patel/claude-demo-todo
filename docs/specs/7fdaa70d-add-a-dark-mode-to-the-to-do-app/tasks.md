@@ -35,7 +35,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `src/index.html`
   - Accept: `grep -q "import { mountThemeToggle } from './theme.js';" src/index.html && grep -q 'mountThemeToggle(document);' src/index.html`
   - Depends on: T2
-- [ ] **T5 —** Add the dark palette to `src/styles.css`: `:root` gains `--color-on-accent: #ffffff` and `color-scheme: light`; a new `html[data-theme="dark"]` block sets `--color-bg: #1a1a1a`, `--color-text: #f0f0f0`, `--color-muted: #a0a0a0`, `--color-border: #404040`, `--color-accent: #0b5fff`, `--color-focus: #0b5fff`, `--color-on-accent: #ffffff` and `color-scheme: dark`. Add palette tests to `test/theme.test.js` whose names contain `styles.css`, reading the file as text: the dark block defines those values, and no hex colour or `white` appears outside the `:root` and `html[data-theme="dark"]` blocks.
+- [x] **T5 —** Add the dark palette to `src/styles.css`: `:root` gains `--color-on-accent: #ffffff` and `color-scheme: light`; a new `html[data-theme="dark"]` block sets `--color-bg: #1a1a1a`, `--color-text: #f0f0f0`, `--color-muted: #a0a0a0`, `--color-border: #404040`, `--color-accent: #0b5fff`, `--color-focus: #0b5fff`, `--color-on-accent: #ffffff` and `color-scheme: dark`. Add palette tests to `test/theme.test.js` whose names contain `styles.css`, reading the file as text: the dark block defines those values, and no hex colour or `white` appears outside the `:root` and `html[data-theme="dark"]` blocks.
   - Files: `src/styles.css`, `test/theme.test.js`
   - Accept: `node --test --test-name-pattern='styles.css' test/theme.test.js`
   - Depends on: T3

@@ -162,3 +162,71 @@ test('todo-theme: a throwing setItem does not stop the toggle', () => {
   app.button.click();
   assertLight(app);
 });
+
+const css = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
+
+function parseRules(text) {
+  const rules = [];
+  const stripped = text.replace(/\/\*[\s\S]*?\*\//g, '');
+  for (const match of stripped.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    rules.push({ selector: match[1].trim(), body: match[2] });
+  }
+  return rules;
+}
+
+function declarations(body) {
+  const result = {};
+  for (const part of body.split(';')) {
+    const index = part.indexOf(':');
+    if (index > 0) {
+      result[part.slice(0, index).trim()] = part.slice(index + 1).trim();
+    }
+  }
+  return result;
+}
+
+function block(selector) {
+  const rule = parseRules(css).find((r) => r.selector === selector);
+  assert.ok(rule, `styles.css has a ${selector} block`);
+  return declarations(rule.body);
+}
+
+test('styles.css: the dark block defines the charcoal palette', () => {
+  const dark = block('html[data-theme="dark"]');
+  assert.equal(dark['--color-bg'], '#1a1a1a');
+  assert.equal(dark['--color-text'], '#f0f0f0');
+  assert.equal(dark['--color-muted'], '#a0a0a0');
+  assert.equal(dark['--color-border'], '#404040');
+  assert.equal(dark['--color-accent'], '#0b5fff');
+  assert.equal(dark['--color-focus'], '#0b5fff');
+  assert.equal(dark['--color-on-accent'], '#ffffff');
+  assert.equal(dark['color-scheme'], 'dark');
+});
+
+test('styles.css: :root keeps the light palette, on-accent and color-scheme light', () => {
+  const root = block(':root');
+  assert.equal(root['--color-on-accent'], '#ffffff');
+  assert.equal(root['color-scheme'], 'light');
+  for (const name of ['--color-bg', '--color-text', '--color-muted', '--color-border', '--color-accent', '--color-focus']) {
+    assert.ok(root[name], `:root defines ${name}`);
+  }
+});
+
+test('styles.css: the dark block redefines every colour variable that :root defines', () => {
+  const root = Object.keys(block(':root')).filter((name) => name.startsWith('--color-'));
+  const dark = block('html[data-theme="dark"]');
+  for (const name of root) {
+    assert.ok(name in dark, `dark block defines ${name}`);
+  }
+});
+
+test('styles.css: no hex colour or white appears outside the variable blocks', () => {
+  const variableBlocks = [':root', 'html[data-theme="dark"]'];
+  const colour = /#[0-9a-fA-F]{3,8}\b|(?<![\w-])white(?![\w-])/;
+  for (const rule of parseRules(css)) {
+    if (variableBlocks.includes(rule.selector)) {
+      continue;
+    }
+    assert.doesNotMatch(rule.body, colour, `${rule.selector} uses only var(--…) colours`);
+  }
+});
