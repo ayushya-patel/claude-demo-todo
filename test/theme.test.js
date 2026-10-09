@@ -220,15 +220,61 @@ test('styles.css: the dark block redefines every colour variable that :root defi
   }
 });
 
-test('styles.css: no hex colour or white appears outside the variable blocks', () => {
-  const variableBlocks = [':root', 'html[data-theme="dark"]'];
-  const colour = /#[0-9a-fA-F]{3,8}\b|(?<![\w-])white(?![\w-])/;
-  for (const rule of parseRules(css)) {
-    if (variableBlocks.includes(rule.selector)) {
+const hardCodedColour = new RegExp(
+  '#[0-9a-f]{3,8}\\b|(?<![\\w-])(?:rgba?|hsla?)\\(|(?<![\\w-])(?:white|black|red|green|blue|gray|grey|silver)(?![\\w-])',
+  'i',
+);
+
+function findHardCodedColours(text, allowedSelectors = []) {
+  const found = [];
+  for (const rule of parseRules(text)) {
+    if (allowedSelectors.includes(rule.selector)) {
       continue;
     }
-    assert.doesNotMatch(rule.body, colour, `${rule.selector} uses only var(--…) colours`);
+    for (const [property, value] of Object.entries(declarations(rule.body))) {
+      if (hardCodedColour.test(value)) {
+        found.push(`${rule.selector} { ${property}: ${value} }`);
+      }
+    }
   }
+  return found;
+}
+
+test('styles.css: no hard-coded colour appears outside the variable blocks', () => {
+  assert.deepEqual(findHardCodedColours(css, [':root', 'html[data-theme="dark"]']), []);
+});
+
+test('styles.css: colour guard rejects rgb() and named colours', () => {
+  const flagged = `
+    a { color: rgb(0, 0, 0); }
+    b { color: RGBA(0 0 0 / 50%); }
+    c { color: hsl(10, 20%, 30%); }
+    d { color: hsla(10, 20%, 30%, 0.5); }
+    e { background: white; }
+    f { border: 1px solid black; }
+    g { color: red; }
+    h { color: green; }
+    i { color: blue; }
+    j { color: gray; }
+    k { color: grey; }
+    l { color: silver; }
+    m { color: #fff; }
+  `;
+  assert.equal(findHardCodedColours(flagged).length, 13);
+
+  const clean = `
+    a { color: var(--color-text); }
+    b { background: transparent; }
+    c { white-space: nowrap; }
+    d { border-color: currentColor; }
+    e { color: inherit; }
+    f { font-family: system-ui, sans-serif; }
+    g { --color-white: var(--color-bg); }
+    .red { color: var(--color-accent); }
+  `;
+  assert.deepEqual(findHardCodedColours(clean), []);
+
+  assert.deepEqual(findHardCodedColours(':root { --color-bg: white; }', [':root']), []);
 });
 
 test('styles.css: text input border uses --color-muted', () => {
