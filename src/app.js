@@ -1,4 +1,4 @@
-import { addTask, toggleTask, removeTask, countCompleted, formatCount } from './todo.js';
+import { addTask, toggleTask, removeTask, countCompleted, formatCount, formatTitle } from './todo.js';
 
 export function mount(document) {
   const form = document.getElementById('todo-form');
@@ -31,7 +31,9 @@ export function mount(document) {
 
   function render() {
     list.replaceChildren(...tasks.map(renderTask));
-    count.textContent = formatCount(countCompleted(tasks));
+    const counts = countCompleted(tasks);
+    count.textContent = formatCount(counts);
+    document.title = formatTitle(counts);
   }
 
   function idOf(target) {
