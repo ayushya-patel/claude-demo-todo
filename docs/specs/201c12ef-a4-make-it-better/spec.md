@@ -73,4 +73,5 @@ Users want to switch between light and dark themes in the to-do app. Their theme
 
 ## Contracts
 
-No changes to contracts — `provides.md` and `requires.md` remain the same. Still one static screen with no API; localStorage is local only (no network calls, no environment variables).
+See [`./contracts/provides.md`](./contracts/provides.md) and [`./contracts/requires.md`](./contracts/requires.md).
+Still one static screen with no API, no network calls and no environment variables; the only new boundary is the saved theme in local storage, which degrades to light when missing or unavailable.
