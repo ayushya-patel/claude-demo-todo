@@ -11,7 +11,7 @@ import them.
 
 | Path | Params | Query / search params | Returns or renders |
 |---|---|---|---|
-| `/` and `/index.html` (static, from `src/`) | none | none | The to-do screen: add form, task list, `X of Y completed` count |
+| `/` and `/index.html` (static, from `src/`) | none | none | The to-do screen: add form, task list, `X of Y completed` count, a decorative progress ring (`completed/total`), and an empty-state message when there are no tasks |
 
 ## Output
 
@@ -34,4 +34,4 @@ on the page and stays in memory.
 
 | Module | Depends on | Why |
 |---|---|---|
-| — | — | Nothing consumes this module; it is the only module in the repo. |
+| `971bd93b-improve-the-to-do-app-s-look` | The `/` screen and its ids (`#todo-form`, `#todo-input`, `#todo-list`, `#todo-count`) | Restyles it in place. |

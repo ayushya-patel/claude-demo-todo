@@ -1,36 +1,270 @@
 :root {
-  --color-bg: #f7f7f9;
-  --color-text: #1f2328;
-  --color-muted: #6a737d;
-  --color-border: #c9ced6;
-  --color-accent: #0b5fff;
-  --color-focus: #0b5fff;
+  --color-text: #1c1c1e;
+  --color-muted: #5c5c61;
+  --color-placeholder: #68686c;
+  --color-accent: #007aff;
+  --color-accent-text: #0062cc;
+  --color-danger: #d70015;
+  --color-danger-hover: rgba(215, 0, 21, 0.12);
+  --color-focus: #0062cc;
+  --color-on-accent: #fff;
+
+  --color-bg-base: #eef0f8;
+  --color-bg-pink: #ffd6e8;
+  --color-bg-blue: #c7e3ff;
+  --color-bg-green: #d9f7e8;
+  --color-bg-yellow: #fff1c7;
+  --color-blob-pink: #ff9ec7;
+  --color-blob-blue: #8fc7ff;
+  --color-blob-green: #a6f0c6;
+
+  --color-glass: rgba(255, 255, 255, 0.45);
+  --color-glass-strong: rgba(255, 255, 255, 0.65);
+  --color-glass-edge: rgba(255, 255, 255, 0.8);
+  --color-glass-input: rgba(255, 255, 255, 0.55);
+  --color-glass-list: rgba(255, 255, 255, 0.4);
+  --color-glass-list-edge: rgba(255, 255, 255, 0.7);
+  --color-glass-pill: rgba(255, 255, 255, 0.5);
+  --color-glass-pill-edge: rgba(255, 255, 255, 0.7);
+  --color-highlight-top: rgba(255, 255, 255, 0.9);
+  --color-highlight-bottom: rgba(255, 255, 255, 0.3);
+  --color-card-shadow: rgba(30, 40, 80, 0.15);
+
+  --color-input-border: rgba(255, 255, 255, 0.8);
+  --color-input-shadow: rgba(0, 0, 0, 0.06);
+  --color-add-top: #0a6bd9;
+  --color-add-bottom: #0059c7;
+  --color-add-border: rgba(255, 255, 255, 0.5);
+  --color-add-highlight: rgba(255, 255, 255, 0.5);
+  --color-add-shadow: rgba(0, 122, 255, 0.35);
+
+  --color-ring-track: rgba(0, 122, 255, 0.15);
+  --color-divider: rgba(60, 60, 67, 0.12);
+  --color-check-border: #77777c;
+  --color-check-bg: rgba(255, 255, 255, 0.5);
+  --color-check-shadow: rgba(0, 122, 255, 0.4);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background: var(--color-bg);
+  min-height: 100vh;
+  overflow-x: hidden;
   color: var(--color-text);
-  font-family: system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 15% 20%, var(--color-bg-pink) 0, transparent 40%),
+    radial-gradient(circle at 85% 15%, var(--color-bg-blue) 0, transparent 45%),
+    radial-gradient(circle at 70% 85%, var(--color-bg-green) 0, transparent 45%),
+    radial-gradient(circle at 20% 90%, var(--color-bg-yellow) 0, transparent 40%),
+    var(--color-bg-base);
+  background-attachment: fixed;
+}
+
+.blob {
+  position: fixed;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.7;
+}
+
+.b1 {
+  width: 280px;
+  height: 280px;
+  background: var(--color-blob-pink);
+  top: 8%;
+  left: 10%;
+}
+
+.b2 {
+  width: 320px;
+  height: 320px;
+  background: var(--color-blob-blue);
+  top: 40%;
+  right: 8%;
+}
+
+.b3 {
+  width: 240px;
+  height: 240px;
+  background: var(--color-blob-green);
+  bottom: 5%;
+  left: 30%;
 }
 
 main {
-  max-width: 32rem;
-  margin: 0 auto;
-  padding: 2rem 1rem;
+  position: relative;
+  z-index: 1;
+  max-width: 34rem;
+  margin: 3.5rem auto;
+  padding: 1.75rem;
+  border-radius: 32px;
+  background: var(--color-glass);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid var(--color-glass-edge);
+  box-shadow:
+    inset 0 1px 0 var(--color-highlight-top),
+    inset 0 -1px 0 var(--color-highlight-bottom),
+    0 20px 50px var(--color-card-shadow);
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.ring {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: conic-gradient(var(--color-accent) calc(var(--progress, 0) * 1turn), var(--color-ring-track) 0);
+  display: grid;
+  place-items: center;
+}
+
+.ring span {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-glass-strong);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: grid;
+  place-items: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-accent-text);
+}
+
+#todo-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+#todo-form label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+#todo-input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 1rem;
+  padding: 0.8rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-input-border);
+  background: var(--color-glass-input);
+  box-shadow: inset 0 1px 3px var(--color-input-shadow);
+  color: var(--color-text);
+}
+
+#todo-input::placeholder {
+  color: var(--color-placeholder);
+}
+
+#todo-form button {
+  flex-shrink: 0;
+  font: inherit;
+  font-weight: 600;
+  padding: 0.8rem 1.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-add-border);
+  background: linear-gradient(180deg, var(--color-add-top), var(--color-add-bottom));
+  color: var(--color-on-accent);
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 var(--color-add-highlight),
+    0 6px 16px var(--color-add-shadow);
 }
 
 #todo-list {
   list-style: none;
+  margin: 0;
   padding: 0;
+  border-radius: 22px;
+  overflow: hidden;
+  background: var(--color-glass-list);
+  border: 1px solid var(--color-glass-list-edge);
+}
+
+#todo-list:empty {
+  display: none;
 }
 
 #todo-list li {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--color-border);
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+}
+
+#todo-list li + li {
+  border-top: 1px solid var(--color-divider);
+}
+
+#todo-list label {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  font-size: 1.02rem;
+}
+
+#todo-list label span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+#todo-list input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid var(--color-check-border);
+  background: var(--color-check-bg);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+#todo-list input[type='checkbox']:checked {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: 0 2px 8px var(--color-check-shadow);
+}
+
+#todo-list input[type='checkbox']:checked::after {
+  content: '';
+  width: 6px;
+  height: 11px;
+  border: solid var(--color-on-accent);
+  border-width: 0 2.5px 2.5px 0;
+  transform: translateY(-1px) rotate(45deg);
 }
 
 .done {
@@ -38,8 +272,96 @@ main {
   color: var(--color-muted);
 }
 
+.del {
+  flex-shrink: 0;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-glass-pill-edge);
+  background: var(--color-glass-pill);
+  color: var(--color-danger);
+  cursor: pointer;
+}
+
+.del:hover {
+  background: var(--color-danger-hover);
+}
+
+#todo-count {
+  margin: 1.1rem 0 0;
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--color-muted);
+}
+
+.empty {
+  margin: 0;
+  padding: 1.75rem 1rem;
+  text-align: center;
+  color: var(--color-muted);
+}
+
+[hidden] {
+  display: none;
+}
+
 input:focus-visible,
 button:focus-visible {
   outline: 3px solid var(--color-focus);
   outline-offset: 2px;
+}
+
+@media (max-width: 36rem) {
+  main {
+    margin: 2rem 0.75rem;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --color-glass: rgba(255, 255, 255, 0.92);
+    --color-glass-strong: rgba(255, 255, 255, 0.95);
+    --color-glass-input: rgba(255, 255, 255, 0.95);
+    --color-glass-list: rgba(255, 255, 255, 0.85);
+    --color-glass-pill: rgba(255, 255, 255, 0.95);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --color-glass: rgba(255, 255, 255, 0.92);
+    --color-glass-strong: rgba(255, 255, 255, 0.95);
+    --color-glass-input: rgba(255, 255, 255, 0.95);
+    --color-glass-list: rgba(255, 255, 255, 0.85);
+    --color-glass-pill: rgba(255, 255, 255, 0.95);
+  }
+}
+
+@media (forced-colors: active) {
+  :root {
+    --color-glass-edge: CanvasText;
+    --color-glass-list-edge: CanvasText;
+    --color-input-border: CanvasText;
+    --color-add-border: ButtonText;
+    --color-glass-pill-edge: ButtonText;
+    --color-accent: Highlight;
+    --color-ring-track: GrayText;
+    --color-glass-strong: Canvas;
+    --color-accent-text: CanvasText;
+  }
+
+  .ring {
+    forced-color-adjust: none;
+  }
+
+  #todo-list input[type='checkbox'] {
+    appearance: auto;
+    -webkit-appearance: auto;
+  }
+
+  #todo-list input[type='checkbox']:checked::after {
+    content: none;
+  }
 }
