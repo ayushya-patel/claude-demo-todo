@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>To-do</title>
+  <style>
+    :root {
+      --color-bg: #f7f7f9;
+      --color-text: #1f2328;
+      --color-muted: #6a737d;
+      --color-border: #c9ced6;
+      --color-accent: #0b5fff;
+      --color-focus: #0b5fff;
+    }
+
+    body.dark-mode {
+      --color-bg: #1a1a1a;
+      --color-text: #e8e8e8;
+      --color-muted: #9a9a9a;
+      --color-border: #2a2a2a;
+      --color-accent: #4da6ff;
+      --color-focus: #4da6ff;
+    }
+
+    body {
+      margin: 0;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: system-ui, sans-serif;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    main {
+      max-width: 32rem;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 1.75rem;
+    }
+
+    .toggle-dark {
+      background: var(--color-border);
+      border: none;
+      color: var(--color-text);
+      cursor: pointer;
+      padding: 0.6rem 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 1.125rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.75rem;
+      height: 2.75rem;
+      transition: background-color 0.2s;
+    }
+
+    .toggle-dark:hover {
+      background: var(--color-muted);
+    }
+
+    #todo-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    #todo-form label {
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    #todo-form input {
+      padding: 0.75rem;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg);
+      color: var(--color-text);
+      border-radius: 0.375rem;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    #todo-form input:focus-visible {
+      outline: 3px solid var(--color-focus);
+      outline-offset: 2px;
+    }
+
+    #todo-form button {
+      padding: 0.75rem 1rem;
+      background: var(--color-accent);
+      color: white;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: opacity 0.2s;
+    }
+
+    #todo-form button:hover {
+      opacity: 0.85;
+    }
+
+    #todo-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.5rem 0;
+    }
+
+    #todo-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    #todo-list label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    #todo-list input[type="checkbox"] {
+      cursor: pointer;
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+
+    .done {
+      text-decoration: line-through;
+      color: var(--color-muted);
+    }
+
+    #todo-list button {
+      background: none;
+      border: none;
+      color: var(--color-muted);
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+      margin-left: auto;
+      transition: color 0.2s;
+    }
+
+    #todo-list button:hover {
+      color: var(--color-accent);
+    }
+
+    #todo-count {
+      color: var(--color-muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="header">
+      <h1>To-do</h1>
+      <button class="toggle-dark" title="Toggle dark mode" aria-label="Toggle dark mode">☀️</button>
+    </div>
+    <form id="todo-form">
+      <label for="todo-input">New task</label>
+      <input id="todo-input" type="text" autocomplete="off" placeholder="What needs to be done?">
+      <button type="submit">Add</button>
+    </form>
+    <ul id="todo-list">
+      <li>
+        <label><input type="checkbox"> <span>Buy groceries</span></label>
+        <button>Delete</button>
+      </li>
+      <li>
+        <label><input type="checkbox" checked> <span class="done">Water plants</span></label>
+        <button>Delete</button>
+      </li>
+      <li>
+        <label><input type="checkbox"> <span>Call mom</span></label>
+        <button>Delete</button>
+      </li>
+    </ul>
+    <p id="todo-count">1 of 3 tasks completed</p>
+  </main>
+  <script>
+    const toggleBtn = document.querySelector('.toggle-dark');
+    const isDark = localStorage.getItem('dark-mode') === 'true';
+    if (isDark) document.body.classList.add('dark-mode');
+    toggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('dark-mode', document.body.classList.contains('dark-mode'));
+    });
+  </script>
+</body>
+</html>

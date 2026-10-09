@@ -1,0 +1,23 @@
+{
+  "round": 1,
+  "options": [
+    {
+      "key": "a",
+      "name": "Toggle button + pure black",
+      "summary": "Moon icon button in the top-right corner; dark mode uses true black background with high contrast.",
+      "file": "round-1/option-a.html"
+    },
+    {
+      "key": "b",
+      "name": "Toggle button + charcoal gray",
+      "summary": "Sun/moon icon toggle in top-right; dark mode uses softer charcoal gray background for less eye strain.",
+      "file": "round-1/option-b.html"
+    },
+    {
+      "key": "c",
+      "name": "System preference (no button)",
+      "summary": "Dark mode automatically follows OS settings (prefers-color-scheme); minimal UI change, no toggle button.",
+      "file": "round-1/option-c.html"
+    }
+  ]
+}

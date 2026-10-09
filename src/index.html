@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8">
   <title>To-do</title>
@@ -7,10 +7,11 @@
 </head>
 <body>
   <main>
+    <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Dark mode" aria-pressed="false">🌙</button>
     <h1>To-do</h1>
     <form id="todo-form">
       <label for="todo-input">New task</label>
-      <input id="todo-input" type="text" autocomplete="off">
+      <input id="todo-input" type="text" placeholder="Enter a task..." autocomplete="off">
       <button type="submit">Add</button>
     </form>
     <ul id="todo-list"></ul>
@@ -18,8 +19,10 @@
   </main>
   <script type="module">
     import { mount } from './app.js';
+    import { mountThemeToggle } from './theme.js';
 
     mount(document);
+    mountThemeToggle(document);
   </script>
 </body>
 </html>

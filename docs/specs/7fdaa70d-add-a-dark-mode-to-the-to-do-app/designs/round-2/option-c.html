@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>To-do</title>
+  <style>
+    :root {
+      --color-bg: #f7f7f9;
+      --color-text: #1f2328;
+      --color-muted: #6a737d;
+      --color-border: #c9ced6;
+      --color-accent: #0b5fff;
+      --color-focus: #0b5fff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-bg: #1a1a1a;
+        --color-text: #e8e8e8;
+        --color-muted: #a0a0a0;
+        --color-border: #333333;
+        --color-accent: #4d9aff;
+        --color-focus: #4d9aff;
+      }
+    }
+
+    body {
+      margin: 0;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: system-ui, sans-serif;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    main {
+      max-width: 32rem;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    h1 {
+      margin: 0 0 2rem 0;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    label {
+      font-weight: 500;
+    }
+
+    input[type="text"] {
+      padding: 0.5rem;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: inherit;
+      border-radius: 4px;
+      transition: border 0.2s;
+    }
+
+    input[type="text"]:focus-visible {
+      outline: 3px solid var(--color-focus);
+      outline-offset: 2px;
+      border-color: var(--color-accent);
+    }
+
+    button[type="submit"] {
+      padding: 0.5rem 1rem;
+      background: var(--color-accent);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    button[type="submit"]:hover {
+      opacity: 0.9;
+    }
+
+    button[type="submit"]:focus-visible {
+      outline: 3px solid var(--color-focus);
+      outline-offset: 2px;
+    }
+
+    #todo-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #todo-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    input[type="checkbox"] {
+      cursor: pointer;
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .done {
+      text-decoration: line-through;
+      color: var(--color-muted);
+    }
+
+    #todo-list label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: normal;
+      cursor: pointer;
+    }
+
+    #todo-list button {
+      padding: 0.25rem 0.75rem;
+      background: transparent;
+      color: var(--color-muted);
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    #todo-list button:hover {
+      opacity: 0.7;
+    }
+
+    #todo-list button:focus-visible {
+      outline: 3px solid var(--color-focus);
+      outline-offset: 2px;
+    }
+
+    #todo-count {
+      margin-top: 1rem;
+      color: var(--color-muted);
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>To-do</h1>
+    <form id="todo-form">
+      <label for="todo-input">New task</label>
+      <input id="todo-input" type="text" autocomplete="off" placeholder="Enter a task...">
+      <button type="submit">Add</button>
+    </form>
+    <ul id="todo-list">
+      <li>
+        <label><input type="checkbox"> Sample task</label>
+        <button type="button">Delete</button>
+      </li>
+      <li>
+        <label><input type="checkbox" checked> <span class="done">Completed task</span></label>
+        <button type="button">Delete</button>
+      </li>
+    </ul>
+    <p id="todo-count">1 of 2 completed</p>
+  </main>
+</body>
+</html>

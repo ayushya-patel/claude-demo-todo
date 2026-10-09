@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="sepia">
+<head>
+  <meta charset="utf-8">
+  <title>To-do</title>
+  <style>
+    :root {
+      --color-bg: #f7f7f9;
+      --color-text: #1f2328;
+      --color-muted: #6a737d;
+      --color-border: #c9ced6;
+      --color-accent: #0b5fff;
+      --color-focus: #0b5fff;
+      --color-on-accent: #ffffff;
+    }
+
+    html[data-theme="sepia"] {
+      --color-bg: #2a2415;
+      --color-text: #d4c5a9;
+      --color-muted: #8b7b5c;
+      --color-border: #453d2f;
+      --color-accent: #9d7e3f;
+      --color-focus: #b5986f;
+      color-scheme: dark;
+    }
+
+    body {
+      margin: 0;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: system-ui, sans-serif;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    main {
+      position: relative;
+      max-width: 32rem;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    h1 {
+      margin: 0 0 1.5rem 0;
+    }
+
+    #todo-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    #todo-form label {
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    #todo-input {
+      padding: 0.5rem;
+      border: 1px solid var(--color-border);
+      border-radius: 0.375rem;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-size: 1rem;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    #todo-input::placeholder {
+      color: var(--color-muted);
+    }
+
+    #todo-form button {
+      padding: 0.5rem 1rem;
+      background: var(--color-accent);
+      color: #ffffff;
+      border: none;
+      border-radius: 0.375rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    #todo-form button:hover {
+      opacity: 0.9;
+    }
+
+    #todo-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #todo-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--color-border);
+      transition: background 0.2s;
+    }
+
+    #todo-list label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    #todo-list input[type="checkbox"] {
+      cursor: pointer;
+    }
+
+    .done {
+      text-decoration: line-through;
+      color: var(--color-muted);
+    }
+
+    #todo-list button {
+      padding: 0.25rem 0.75rem;
+      background: transparent;
+      color: var(--color-muted);
+      border: 1px solid var(--color-muted);
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    #todo-list button:hover {
+      background: var(--color-muted);
+      color: var(--color-bg);
+    }
+
+    #todo-count {
+      font-size: 0.875rem;
+      color: var(--color-muted);
+      margin-top: 1rem;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 2rem;
+      right: 1rem;
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 0.375rem;
+      transition: background 0.2s;
+    }
+
+    .theme-toggle:hover {
+      background: var(--color-border);
+    }
+
+    input:focus-visible,
+    button:focus-visible {
+      outline: 3px solid var(--color-focus);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" aria-pressed="true">☀️</button>
+    <h1>To-do</h1>
+    <form id="todo-form">
+      <label for="todo-input">New task</label>
+      <input id="todo-input" type="text" autocomplete="off" placeholder="Enter a task...">
+      <button type="submit">Add</button>
+    </form>
+    <ul id="todo-list">
+      <li data-id="1">
+        <label>
+          <input type="checkbox">
+          <span>Buy groceries</span>
+        </label>
+        <button type="button" aria-label="Delete Buy groceries">Delete</button>
+      </li>
+      <li data-id="2">
+        <label>
+          <input type="checkbox" checked>
+          <span class="done">Finish report</span>
+        </label>
+        <button type="button" aria-label="Delete Finish report">Delete</button>
+      </li>
+      <li data-id="3">
+        <label>
+          <input type="checkbox">
+          <span>Call mom</span>
+        </label>
+        <button type="button" aria-label="Delete Call mom">Delete</button>
+      </li>
+    </ul>
+    <p id="todo-count">1 of 3 completed</p>
+  </main>
+</body>
+</html>

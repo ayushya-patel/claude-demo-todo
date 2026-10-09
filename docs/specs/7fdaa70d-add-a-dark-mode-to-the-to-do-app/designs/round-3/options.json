@@ -1,0 +1,17 @@
+{
+  "round": 3,
+  "options": [
+    {
+      "key": "a",
+      "name": "High-contrast dark",
+      "summary": "Pure white text on true black (#000000) background for maximum accessibility and contrast.",
+      "file": "round-3/option-a.html"
+    },
+    {
+      "key": "b",
+      "name": "Dim sepia",
+      "summary": "Warm, muted sepia tones (#2a2415 background, #d4c5a9 text) for a paper-like, eye-friendly evening reading experience.",
+      "file": "round-3/option-b.html"
+    }
+  ]
+}

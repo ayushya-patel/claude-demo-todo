@@ -11,18 +11,19 @@ import them.
 
 | Path | Params | Query / search params | Returns or renders |
 |---|---|---|---|
-| `/` and `/index.html` (static, from `src/`) | none | none | The to-do screen: add form, task list, `X of Y completed` count |
+| `/` and `/index.html` (static, from `src/`) | none | none | The to-do screen: add form, task list, `X of Y completed` count, plus a sun/moon theme toggle (added by `7fdaa70d-add-a-dark-mode-to-the-to-do-app`) |
 
 ## Output
 
 | Route / endpoint | Returns | Type |
 |---|---|---|
-| `/index.html` | Static HTML page with its `styles.css`, `app.js`, `todo.js` | none — no data API |
+| `/index.html` | Static HTML page with its `styles.css`, `app.js`, `todo.js`, `theme.js` | none — no data API |
 
 ## Input
 
-None. The app accepts no requests and exposes no API; all input is typed by the user
-on the page and stays in memory.
+The app accepts no requests and exposes no API. Tasks are typed by the user on the page
+and stay in memory. The only other input is a click on the theme toggle; the chosen theme
+is saved in the browser's own `localStorage` (key `todo-theme`) and never sent anywhere.
 
 ## Status and redirect behaviour
 
@@ -34,4 +35,4 @@ on the page and stays in memory.
 
 | Module | Depends on | Why |
 |---|---|---|
-| — | — | Nothing consumes this module; it is the only module in the repo. |
+| 7fdaa70d-add-a-dark-mode-to-the-to-do-app | `/` and `/index.html` (the to-do screen) and the colour variables in `styles.css` | Extends the screen with the theme toggle and the dark palette. |

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>To-do</title>
+  <style>
+    :root {
+      --color-bg: #f7f7f9;
+      --color-text: #1f2328;
+      --color-muted: #6a737d;
+      --color-border: #c9ced6;
+      --color-accent: #0b5fff;
+      --color-focus: #0b5fff;
+    }
+
+    body.dark-mode {
+      --color-bg: #000000;
+      --color-text: #ffffff;
+      --color-muted: #a0a0a0;
+      --color-border: #333333;
+      --color-accent: #3d8eff;
+      --color-focus: #3d8eff;
+    }
+
+    body {
+      margin: 0;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: system-ui, sans-serif;
+    }
+
+    main {
+      max-width: 32rem;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 1.75rem;
+    }
+
+    .toggle-dark {
+      background: none;
+      border: 1px solid var(--color-border);
+      color: var(--color-text);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+
+    .toggle-dark:hover {
+      background: var(--color-accent);
+      opacity: 0.1;
+    }
+
+    #todo-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    #todo-form label {
+      font-weight: 500;
+    }
+
+    #todo-form input {
+      padding: 0.75rem;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg);
+      color: var(--color-text);
+      border-radius: 0.25rem;
+      font-size: 1rem;
+    }
+
+    #todo-form button {
+      padding: 0.75rem 1rem;
+      background: var(--color-accent);
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    #todo-form button:hover {
+      opacity: 0.9;
+    }
+
+    #todo-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    #todo-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .done {
+      text-decoration: line-through;
+      color: var(--color-muted);
+    }
+
+    #todo-list button {
+      background: none;
+      border: none;
+      color: var(--color-accent);
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+      margin-left: auto;
+    }
+
+    #todo-list button:hover {
+      text-decoration: underline;
+    }
+
+    input:focus-visible,
+    button:focus-visible {
+      outline: 3px solid var(--color-focus);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="header">
+      <h1>To-do</h1>
+      <button class="toggle-dark" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+    </div>
+    <form id="todo-form">
+      <label for="todo-input">New task</label>
+      <input id="todo-input" type="text" autocomplete="off" placeholder="What needs to be done?">
+      <button type="submit">Add</button>
+    </form>
+    <ul id="todo-list">
+      <li>
+        <label><input type="checkbox"> <span>Buy groceries</span></label>
+        <button>Delete</button>
+      </li>
+      <li>
+        <label><input type="checkbox" checked> <span class="done">Water plants</span></label>
+        <button>Delete</button>
+      </li>
+      <li>
+        <label><input type="checkbox"> <span>Call mom</span></label>
+        <button>Delete</button>
+      </li>
+    </ul>
+    <p id="todo-count">1 of 3 tasks completed</p>
+  </main>
+  <script>
+    const toggleBtn = document.querySelector('.toggle-dark');
+    const isDark = localStorage.getItem('dark-mode') === 'true';
+    if (isDark) document.body.classList.add('dark-mode');
+    toggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('dark-mode', document.body.classList.contains('dark-mode'));
+    });
+  </script>
+</body>
+</html>
