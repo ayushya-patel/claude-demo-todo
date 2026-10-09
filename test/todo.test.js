@@ -4,6 +4,7 @@ import {
   addTask,
   toggleTask,
   removeTask,
+  editTask,
   countCompleted,
   formatCount,
   progress,
@@ -96,6 +97,51 @@ test('removeTask does not mutate its input', () => {
   const snapshot = structuredClone(tasks);
   removeTask(tasks, tasks[0].id);
   assert.deepEqual(tasks, snapshot);
+});
+
+test('editTask replaces the text of an open task and keeps id and done', () => {
+  const [task] = addTask([], 'a');
+  const result = editTask([task], task.id, 'b');
+  assert.deepEqual(result, [{ id: task.id, text: 'b', done: false }]);
+});
+
+test('editTask replaces the text of a done task and keeps it done', () => {
+  const [task] = addTask([], 'a');
+  const done = toggleTask([task], task.id);
+  const result = editTask(done, task.id, 'b');
+  assert.deepEqual(result, [{ id: task.id, text: 'b', done: true }]);
+});
+
+test('editTask trims the text', () => {
+  const [task] = addTask([], 'a');
+  assert.equal(editTask([task], task.id, '  b \t')[0].text, 'b');
+});
+
+test('editTask rejects empty text', () => {
+  const tasks = addTask([], 'a');
+  assert.equal(editTask(tasks, tasks[0].id, ''), tasks);
+});
+
+test('editTask rejects whitespace-only text', () => {
+  const tasks = addTask([], 'a');
+  assert.equal(editTask(tasks, tasks[0].id, ' \t\n '), tasks);
+  assert.equal(tasks[0].text, 'a');
+});
+
+test('editTask with an unknown id returns the same list', () => {
+  const tasks = addTask([], 'a');
+  assert.equal(editTask(tasks, -1, 'b'), tasks);
+});
+
+test('editTask leaves other tasks and the counts unchanged and does not mutate', () => {
+  let tasks = addTask(addTask([], 'a'), 'b');
+  tasks = toggleTask(tasks, tasks[1].id);
+  const snapshot = structuredClone(tasks);
+  const result = editTask(tasks, tasks[0].id, 'c');
+  assert.deepEqual(tasks, snapshot);
+  assert.notEqual(result, tasks);
+  assert.equal(result[1], tasks[1]);
+  assert.deepEqual(countCompleted(result), countCompleted(tasks));
 });
 
 test('countCompleted is 0 of 0 for an empty list', () => {

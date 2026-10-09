@@ -1,4 +1,4 @@
-import { addTask, toggleTask, removeTask, countCompleted, formatCount, progress } from './todo.js';
+import { addTask, toggleTask, removeTask, editTask, countCompleted, formatCount, progress } from './todo.js';
 
 export function mount(document) {
   const form = document.getElementById('todo-form');
@@ -9,19 +9,30 @@ export function mount(document) {
   const ringLabel = document.getElementById('todo-ring-label');
   const empty = document.getElementById('todo-empty');
   let tasks = [];
+  let editingId = null;
 
   function renderTask(task) {
     const item = document.createElement('li');
     item.dataset.id = String(task.id);
 
-    const label = document.createElement('label');
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.checked = task.done;
-    const text = document.createElement('span');
-    text.textContent = task.text;
-    text.classList.toggle('done', task.done);
-    label.append(checkbox, text);
+    checkbox.setAttribute('aria-label', task.text);
+    let text;
+    if (task.id === editingId) {
+      text = document.createElement('input');
+      text.type = 'text';
+      text.className = 'edit';
+      text.value = task.text;
+      text.setAttribute('aria-label', `Edit task: ${task.text}`);
+    } else {
+      text = document.createElement('span');
+      text.textContent = task.text;
+      text.tabIndex = 0;
+      text.setAttribute('aria-describedby', 'edit-hint');
+      text.classList.toggle('done', task.done);
+    }
 
     const remove = document.createElement('button');
     remove.type = 'button';
@@ -29,7 +40,11 @@ export function mount(document) {
     remove.textContent = 'Delete';
     remove.setAttribute('aria-label', `Delete ${task.text}`);
 
-    item.append(label, remove);
+    const row = document.createElement('div');
+    row.className = 'task';
+    row.append(checkbox, text);
+
+    item.append(row, remove);
     return item;
   }
 
@@ -46,6 +61,32 @@ export function mount(document) {
     return Number(target.closest('li').dataset.id);
   }
 
+  function startEdit(id) {
+    editingId = id;
+    render();
+    const field = list.querySelector(`li[data-id="${id}"] input.edit`);
+    field.focus();
+    field.select();
+  }
+
+  function finishEdit(field, save, refocus = true) {
+    const item = field.closest('li');
+    const id = idOf(field);
+    const value = field.value;
+    editingId = null;
+    if (save) {
+      tasks = editTask(tasks, id, value);
+    }
+    item.replaceWith(renderTask(tasks.find((task) => task.id === id)));
+    if (refocus) {
+      list.querySelector(`li[data-id="${id}"] span`).focus();
+    }
+  }
+
+  function isCurrentEdit(target) {
+    return target.matches('input.edit') && idOf(target) === editingId;
+  }
+
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     tasks = addTask(tasks, input.value);
@@ -54,6 +95,9 @@ export function mount(document) {
   });
 
   list.addEventListener('change', (event) => {
+    if (event.target.type !== 'checkbox') {
+      return;
+    }
     const id = idOf(event.target);
     tasks = toggleTask(tasks, id);
     render();
@@ -71,6 +115,47 @@ export function mount(document) {
     render();
     const buttons = list.querySelectorAll('button');
     (buttons[Math.min(index, buttons.length - 1)] ?? input).focus();
+  });
+
+  list.addEventListener('dblclick', (event) => {
+    if (event.target.tagName === 'SPAN') {
+      startEdit(idOf(event.target));
+    }
+  });
+
+  list.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && !event.repeat && event.target.tagName === 'SPAN') {
+      event.preventDefault();
+      startEdit(idOf(event.target));
+    }
+  });
+
+  list.addEventListener('keydown', (event) => {
+    if (event.isComposing || event.repeat || !isCurrentEdit(event.target)) {
+      return;
+    }
+    if (event.key === 'Enter') {
+      finishEdit(event.target, true);
+    } else if (event.key === 'Escape') {
+      finishEdit(event.target, false);
+    }
+  });
+
+  list.addEventListener('mousedown', (event) => {
+    if (event.button !== 0) {
+      return;
+    }
+    const control = event.target.closest('button, input[type="checkbox"]');
+    if (control !== null && idOf(control) === editingId) {
+      editingId = null;
+    }
+  });
+
+  list.addEventListener('focusout', (event) => {
+    if (isCurrentEdit(event.target)) {
+      const next = event.relatedTarget;
+      finishEdit(event.target, true, next === null || event.target.closest('li').contains(next));
+    }
   });
 
   render();

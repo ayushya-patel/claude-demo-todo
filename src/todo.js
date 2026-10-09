@@ -16,6 +16,14 @@ export function removeTask(tasks, id) {
   return tasks.filter((task) => task.id !== id);
 }
 
+export function editTask(tasks, id, text) {
+  const trimmed = text.trim();
+  if (trimmed === '' || !tasks.some((task) => task.id === id)) {
+    return tasks;
+  }
+  return tasks.map((task) => (task.id === id ? { ...task, text: trimmed } : task));
+}
+
 export function countCompleted(tasks) {
   return {
     completed: tasks.filter((task) => task.done).length,
