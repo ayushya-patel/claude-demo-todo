@@ -35,3 +35,10 @@ The title updates whenever the task list changes:
 - Unit test: `countOpen()` returns the number of incomplete tasks.
 - Integration test: render() updates `document.title` to match current open count.
 - Manual: add, complete, and delete tasks; verify tab title matches open count.
+
+## Contracts
+
+Detail lives in `./contracts/` — `provides.md` and `requires.md`.
+
+- **Provides:** the existing to-do screen, whose tab title now reads "To-do (N)"; nothing consumes it.
+- **Requires:** nothing upstream — no network calls, no environment variables, no sibling modules.
