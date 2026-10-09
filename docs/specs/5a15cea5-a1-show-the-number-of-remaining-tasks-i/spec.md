@@ -10,7 +10,7 @@ The browser tab title does not reflect the current state of the to-do list, maki
 
 - The page title updates dynamically to show the count of incomplete tasks
 - When tasks remain, the title reads "(N) To-do" where N is the number of incomplete tasks
-- When all tasks are complete (N = 0), the title reads "To-do"
+- When all tasks are complete (N = 0), the title reads "To-do - all done"
 - The title updates whenever a task is added, ticked, unticked, or deleted
 
 ## Out of scope
@@ -31,7 +31,7 @@ The `render()` function in app.js calculates the count of incomplete tasks (tota
 
 - Calculate remaining count as: `total - completed`
 - If remaining > 0, set title to `"(${remaining}) To-do"`
-- If remaining = 0, set title to `"To-do"`
+- If remaining = 0, set title to `"To-do - all done"`
 - Perform this update every time `render()` is called, which happens when:
   - A new task is added
   - A task checkbox is toggled
@@ -41,11 +41,11 @@ The `render()` function in app.js calculates the count of incomplete tasks (tota
 
 | Case | Behaviour |
 |------|-----------|
-| First task added | Title changes from "To-do" to "(1) To-do" |
-| Last task ticked as done | Title changes from "(1) To-do" to "To-do" |
+| First task added | Title changes from "To-do - all done" to "(1) To-do" |
+| Last task ticked as done | Title changes from "(1) To-do" to "To-do - all done" |
 | Task unticked | Title updates to show remaining count again |
-| All tasks deleted | Title becomes "To-do" |
-| No tasks exist | Title is "To-do" |
+| All tasks deleted | Title becomes "To-do - all done" |
+| No tasks exist | Title is "To-do - all done" |
 
 ## Verification
 
@@ -54,5 +54,5 @@ The `render()` function in app.js calculates the count of incomplete tasks (tota
 - Tick one task and verify the title shows "(1) To-do"
 - Untick it and verify the title shows "(2) To-do"
 - Delete a task and verify the title updates correctly
-- Tick all remaining tasks and verify the title shows "To-do"
-- Delete all tasks and verify the title shows "To-do"
+- Tick all remaining tasks and verify the title shows "To-do - all done"
+- Delete all tasks and verify the title shows "To-do - all done"
