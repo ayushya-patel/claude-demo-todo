@@ -33,3 +33,8 @@ Add `placeholder="What needs doing?"` to the input element with id `todo-input` 
 
 - Placeholder is visible when the input is empty.
 - Placeholder disappears when user types.
+
+## Contracts
+
+No new public boundary: this changes the to-do screen owned by `00000000-build-a-basic-to-do-app`.
+See [`./contracts/provides.md`](./contracts/provides.md) and [`./contracts/requires.md`](./contracts/requires.md).
