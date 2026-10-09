@@ -50,7 +50,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
 - [x] **T8 —** Give the text input a border that meets WCAG 1.4.11 (3 : 1) in both themes: in `src/styles.css` the `input[type="text"]` rule uses `border: 1px solid var(--color-muted)` (≈ 4.5 : 1 on light `#f7f7f9`, ≈ 6.7 : 1 on dark `#1a1a1a`) instead of `--color-border`. Add a test in `test/theme.test.js` named `styles.css: text input border uses --color-muted`. (Found by the whole-diff review.)
   - Files: `src/styles.css`, `test/theme.test.js`
   - Accept: `node --test --test-name-pattern='text input border' test/theme.test.js`
-- [ ] **T9 —** Keep button text at ≥ 4.5 : 1 on hover: in `src/styles.css` remove the `opacity` hover fades; `#todo-list button:hover` sets `color: var(--color-text)` and `border-color: var(--color-muted)`, and `button[type="submit"]:hover` sets `text-decoration: underline` (drop the `opacity` transitions those rules no longer need). Add a test in `test/theme.test.js` named `styles.css: no opacity in any rule`. (Found by the whole-diff review.)
+- [x] **T9 —** Keep button text at ≥ 4.5 : 1 on hover: in `src/styles.css` remove the `opacity` hover fades; `#todo-list button:hover` sets `color: var(--color-text)` and `border-color: var(--color-muted)`, and `button[type="submit"]:hover` sets `text-decoration: underline` (drop the `opacity` transitions those rules no longer need). Add a test in `test/theme.test.js` named `styles.css: no opacity in any rule`. (Found by the whole-diff review.)
   - Files: `src/styles.css`, `test/theme.test.js`
   - Accept: `node --test --test-name-pattern='no opacity' test/theme.test.js`
   - Depends on: T8

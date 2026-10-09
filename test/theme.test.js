@@ -234,3 +234,9 @@ test('styles.css: no hex colour or white appears outside the variable blocks', (
 test('styles.css: text input border uses --color-muted', () => {
   assert.equal(block('input[type="text"]').border, '1px solid var(--color-muted)');
 });
+
+test('styles.css: no opacity in any rule', () => {
+  for (const rule of parseRules(css)) {
+    assert.ok(!('opacity' in declarations(rule.body)), `${rule.selector} sets no opacity`);
+  }
+});
