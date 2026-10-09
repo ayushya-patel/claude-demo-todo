@@ -1,64 +1,76 @@
-# Make the to-do list load faster
+# Add dark mode toggle with persistent choice
 
 - **Status:** Draft
 
 ## Problem
 
-The to-do app's list rendering is slow when displaying many tasks. Initial page load and DOM updates after user actions (add, toggle, delete) can be sluggish, degrading the user experience.
+Users want to switch between light and dark themes in the to-do app. Their theme preference should persist across sessions so they don't have to toggle it every time they return.
 
 ## Outcomes
 
-- List renders faster on page load
-- DOM updates after add/toggle/delete actions are faster
-- App remains responsive with large task lists (50+ tasks)
-- All existing features and tests continue to work
+- A dark mode toggle appears in the header
+- Clicking the toggle switches between light and dark themes
+- The user's theme choice is saved and restored on page reload
+- Dark mode uses the existing CSS variable structure for colours
 
 ## Out of scope
 
-- Adding new features (dates, priority, categories, etc.)
-- Changing the app's visual design or user interface
-- Persistence or data storage
-- Mobile-specific optimizations
+- Syncing theme preference across devices or browsers
+- Auto-detection of system theme preference
+- Multiple theme options beyond light/dark
+- Changing the app's layout or structure beyond the header toggle
 
 ## Constraints
 
 - Vanilla JavaScript only (no frameworks)
-- Must not break existing functionality or test coverage
-- Logic stays isolated in todo.js, DOM wiring in app.js
-- CSS variables in styles.css remain unchanged
+- Theme preference stored in localStorage
+- CSS variables in styles.css define light and dark palettes
+- Toggle control must be placed in the header
+- All existing to-do features (add, mark done, delete, count) must work in both themes
 
 ## Behaviour
 
-### Performance improvements
-- List rendering uses efficient DOM methods to minimize repaints and reflows
-- Only necessary DOM nodes are created and destroyed
-- Event listeners are managed efficiently
-- CSS selectors are optimized for fast element lookups
+### Header toggle
+- A toggle button or switch appears in the header (visual style to be determined by design)
+- Toggle label or icon clearly indicates light/dark mode
+- Clicking the toggle switches the current theme immediately
+- Theme change applies to the entire page
+
+### Persistent storage
+- When user toggles theme, the choice is saved to localStorage with key `theme` (value: "light" or "dark")
+- On page load, the saved theme preference is read from localStorage and applied
+- If no saved preference exists, default to light theme
+- Clearing browser data (or localStorage) resets to light theme on next load
+
+### Visual changes
+- Dark mode inverts the colour scheme using existing CSS variables
+- All task elements, input field, buttons, and count display update colours
+- Toggle control remains visible and usable in both themes
 
 ### Existing behaviour unchanged
-- Add task, mark done, delete task, and count display work exactly as before
-- Edge cases (whitespace rejection, rapid clicks, etc.) behave the same
-- Visual appearance and user interactions remain identical
-- Test suite passes without modification
+- Add task, mark done, delete task, and count display work identically in light and dark modes
+- All existing functionality continues to work
+- No changes to task logic or interactions
 
 ### Edge cases
 
 | Scenario | Behaviour |
 |---|---|
-| Load page with no tasks | List renders instantly |
-| Add 100 tasks rapidly | No lag or visible stutter |
-| Toggle done on task in large list | Checkbox updates smoothly |
-| Delete multiple tasks in sequence | DOM updates without flickering |
-| Focus management during rapid actions | Focus moves correctly as before |
+| Toggle theme, then reload page | Saved theme preference is applied |
+| Open app in new tab after setting dark mode | New tab loads with dark mode if localStorage is shared |
+| Toggle rapidly between light and dark | No lag; theme switches smoothly each time |
+| localStorage is full or disabled | App still works in light mode (saved preference unavailable, but core features functional) |
+| Add/delete/toggle tasks in dark mode | All operations work as before; colours update correctly |
 
 ## Verification
 
-- `npm test` passes with no changes to test assertions
-- Manual test: load page, add 50 tasks, verify no visible lag
-- Manual test: toggle done/undone on various tasks in large list, verify smooth response
-- Performance profiling: measure render time before/after, confirm improvement
-- All existing manual tests from original spec still pass
+- `npm test` passes (no changes to core to-do logic tests)
+- Manual test: load page in light mode, toggle to dark mode, reload page, verify dark mode persists
+- Manual test: toggle to light mode, reload, verify light mode persists
+- Manual test: clear localStorage, reload, verify default light mode applies
+- Manual test: add tasks, mark done, delete tasks in both light and dark modes; verify all features work
+- Visual check: toggle between themes, confirm all elements are visible and readable in both modes
 
 ## Contracts
 
-No changes to contracts — `provides.md` and `requires.md` remain the same. Still one static screen with no API; still requires nothing upstream.
+No changes to contracts — `provides.md` and `requires.md` remain the same. Still one static screen with no API; localStorage is local only (no network calls, no environment variables).
