@@ -27,7 +27,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `src/app.js`
   - Accept: `node --input-type=module -e "import { readFileSync } from 'node:fs'; import { JSDOM } from 'jsdom'; import { mount } from './src/app.js'; const dom = new JSDOM(readFileSync('src/index.html', 'utf8')); const d = dom.window.document; mount(d); const t0 = d.title; d.getElementById('todo-input').value = 'a'; d.getElementById('todo-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true })); process.exit(t0 === 'To-do - all done' && d.title === '(1) To-do' ? 0 : 1);"`
   - Depends on: T1
-- [ ] **T3 —** Add jsdom tests to `test/app.test.js` asserting `document.title` through real events, following the spec's Verification sequence: on mount `To-do - all done`; add → `(1) To-do`; add → `(2) To-do`; tick one → `(1) To-do`; untick → `(2) To-do`; delete one → `(1) To-do`; tick the rest → `To-do - all done`; delete all → `To-do - all done`; plus a separate test: with one done and one open task, deleting the open one → `To-do - all done`
+- [x] **T3 —** Add jsdom tests to `test/app.test.js` asserting `document.title` through real events, following the spec's Verification sequence: on mount `To-do - all done`; add → `(1) To-do`; add → `(2) To-do`; tick one → `(1) To-do`; untick → `(2) To-do`; delete one → `(1) To-do`; tick the rest → `To-do - all done`; delete all → `To-do - all done`; plus a separate test: with one done and one open task, deleting the open one → `To-do - all done`
   - Files: `test/app.test.js`
   - Accept: `grep -q "(2) To-do" test/app.test.js && grep -q "To-do - all done" test/app.test.js && node --test test/app.test.js`
   - Depends on: T2

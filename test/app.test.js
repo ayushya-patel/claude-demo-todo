@@ -220,3 +220,39 @@ test('deleting the last remaining task focuses the text input', () => {
   app.deleteButton(0).click();
   assert.equal(app.document.activeElement, app.input);
 });
+
+test('document.title tracks the remaining tasks through add, toggle and delete', () => {
+  const app = setup();
+  assert.equal(app.document.title, 'To-do - all done');
+
+  app.add('One');
+  assert.equal(app.document.title, '(1) To-do');
+  app.add('Two');
+  assert.equal(app.document.title, '(2) To-do');
+
+  app.checkbox(0).click();
+  assert.equal(app.document.title, '(1) To-do');
+  app.checkbox(0).click();
+  assert.equal(app.document.title, '(2) To-do');
+
+  app.deleteButton(0).click();
+  assert.equal(app.document.title, '(1) To-do');
+
+  app.checkbox(0).click();
+  assert.equal(app.document.title, 'To-do - all done');
+
+  app.deleteButton(0).click();
+  assert.equal(app.items().length, 0);
+  assert.equal(app.document.title, 'To-do - all done');
+});
+
+test('deleting the only open task leaves the title "To-do - all done"', () => {
+  const app = setup();
+  app.add('Done');
+  app.add('Open');
+  app.checkbox(0).click();
+  assert.equal(app.document.title, '(1) To-do');
+  app.deleteButton(1).click();
+  assert.equal(app.items().length, 1);
+  assert.equal(app.document.title, 'To-do - all done');
+});
