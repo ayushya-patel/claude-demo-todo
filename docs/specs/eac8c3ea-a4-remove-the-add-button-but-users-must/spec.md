@@ -4,14 +4,13 @@
 
 ## Problem
 
-The current to-do app requires users to click an Add button or press Enter to add tasks. The requirement is to remove the Add button and allow task addition with zero clicks and zero typing, while tasks survive a page reload, all without storing data anywhere and with no JavaScript.
+The current to-do app requires users to click an Add button or press Enter to add tasks. The requirement is to remove the Add button and allow task addition with zero clicks and zero typing, while tasks survive a page reload, all without storing data anywhere.
 
 ## Outcomes
 
 - The Add button is removed from the UI
 - Tasks can be added without user interaction (clicks or typing)
 - Tasks persist through a page reload
-- The app works without JavaScript
 - All existing task functionality (marking done, deleting, counting) remains
 
 ## Out of scope
@@ -20,14 +19,14 @@ The current to-do app requires users to click an Add button or press Enter to ad
 - Task priority or categories
 - Mobile-specific design
 - Keyboard shortcuts
+- Persistent external storage (localStorage, database, backend)
 
 ## Constraints
 
 - No Add button visible
 - Zero clicks and zero typing required to add tasks
-- No storage (no localStorage, database, or any persistent backend)
-- No JavaScript allowed
-- Tasks must survive a page reload
+- No persistent storage allowed (no localStorage, database, or server-side storage)
+- Tasks must survive a page reload despite no storage
 
 ## Behaviour
 
@@ -68,7 +67,7 @@ The current to-do app requires users to click an Add button or press Enter to ad
 - Manual test: load the page, verify tasks appear without clicking or typing
 - Reload the page and verify tasks are still present
 - Verify checkboxes and delete buttons still work
-- No JavaScript files are loaded or required
+- `npm test` passes all task management tests
 
 ## Contracts
 
@@ -77,9 +76,8 @@ The current to-do app requires users to click an Add button or press Enter to ad
 
 ## Notes
 
-The requirements contain contradictions:
-- Tasks cannot persist through reload without storage (localStorage, sessionStorage, database, or server-side storage)
-- An interactive app requires JavaScript; CSS and HTML alone cannot add tasks without user input
+The requirements still contain a core contradiction:
+- Tasks must persist through reload without any storage mechanism (no localStorage, sessionStorage, IndexedDB, database, or server)
 - Tasks cannot be added without source input (text entry, selection, or user action)
 
-Clarification needed before implementation: How should tasks be added without user input? What mechanism provides task content? How do tasks survive reload without storage?
+Clarification needed before implementation: How should tasks be added without user input? What mechanism provides task content? How do tasks survive reload without any storage?
