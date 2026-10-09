@@ -70,6 +70,6 @@ Detail lives in `./contracts/` — `provides.md` and `requires.md`.
 
 **The two forms.** When at least one task is not done, the title is `(N) To-do`, where N is the number of tasks not done, for example `(2) To-do`. When none are left, including when the list is empty, it is `To-do - all done` (an ordinary hyphen). Task text never goes into the title.
 
-**First load.** `index.html` still carries the fixed `<title>To-do</title>`. The first draw on load replaces it, so a fresh page immediately shows `To-do - all done` and the fixed title is only seen if the script does not run.
+**First load.** The page ships with a fixed title of just "To-do". The first draw on load replaces it, so a fresh page immediately shows `To-do - all done` and the fixed title is only seen if the script does not run.
 
-**Divergences.** None from `plan.md`: approach A shipped as planned (a small formatting function in `src/todo.js`, called from the redraw in `src/app.js`).
+**Divergences.** None from the plan: approach A shipped as planned (a small formatting step in the task logic, called from the redraw in the page logic).

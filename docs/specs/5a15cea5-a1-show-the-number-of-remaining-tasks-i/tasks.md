@@ -35,7 +35,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `docs/specs/5a15cea5-a1-show-the-number-of-remaining-tasks-i/spec.md`
   - Accept: `grep -q "^## How it works" docs/specs/5a15cea5-a1-show-the-number-of-remaining-tasks-i/spec.md`
   - Depends on: T3
-- [ ] **T4a —** Rewrite the `## How it works` section of this ticket's `spec.md` (only that section, which is the last one) so it names no file paths, file names, HTML tags, library names or function names (Constitution Article II; found by the guardian in verify round 1): e.g. "the page's fixed title is replaced on the first draw", "a small formatting step called from the redraw"; keep the same behaviour description and the one-line divergence note; do not touch anything above `## How it works`
+- [x] **T4a —** Rewrite the `## How it works` section of this ticket's `spec.md` (only that section, which is the last one) so it names no file paths, file names, HTML tags, library names or function names (Constitution Article II; found by the guardian in verify round 1): e.g. "the page's fixed title is replaced on the first draw", "a small formatting step called from the redraw"; keep the same behaviour description and the one-line divergence note; do not touch anything above `## How it works`
   - Files: `docs/specs/5a15cea5-a1-show-the-number-of-remaining-tasks-i/spec.md`
   - Accept: `grep -q "^## How it works" docs/specs/5a15cea5-a1-show-the-number-of-remaining-tasks-i/spec.md && ! sed -n '/^## How it works/,$p' docs/specs/5a15cea5-a1-show-the-number-of-remaining-tasks-i/spec.md | grep -Eq '\.js|\.html|<title>|src/|\(\)'`
   - Depends on: T4
