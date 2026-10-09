@@ -11,21 +11,27 @@ export function mount(document) {
     const item = document.createElement('li');
     item.dataset.id = String(task.id);
 
-    const label = document.createElement('label');
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.checked = task.done;
+    checkbox.setAttribute('aria-label', task.text);
     const text = document.createElement('span');
     text.textContent = task.text;
     text.classList.toggle('done', task.done);
-    label.append(checkbox, text);
+
+    const edit = document.createElement('button');
+    edit.type = 'button';
+    edit.dataset.action = 'edit';
+    edit.textContent = 'Edit';
+    edit.setAttribute('aria-label', `Edit ${task.text}`);
 
     const remove = document.createElement('button');
     remove.type = 'button';
+    remove.dataset.action = 'delete';
     remove.textContent = 'Delete';
     remove.setAttribute('aria-label', `Delete ${task.text}`);
 
-    item.append(label, remove);
+    item.append(checkbox, text, edit, remove);
     return item;
   }
 
@@ -53,7 +59,7 @@ export function mount(document) {
   });
 
   list.addEventListener('click', (event) => {
-    const button = event.target.closest('button');
+    const button = event.target.closest('button[data-action="delete"]');
     if (button === null) {
       return;
     }
@@ -61,7 +67,7 @@ export function mount(document) {
     const index = tasks.findIndex((task) => task.id === id);
     tasks = removeTask(tasks, id);
     render();
-    const buttons = list.querySelectorAll('button');
+    const buttons = list.querySelectorAll('button[data-action="delete"]');
     (buttons[Math.min(index, buttons.length - 1)] ?? input).focus();
   });
 

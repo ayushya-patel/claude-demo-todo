@@ -26,7 +26,8 @@ function setup() {
     },
     items: () => [...list.querySelectorAll('li')],
     checkbox: (index) => list.querySelectorAll('li')[index].querySelector('input[type="checkbox"]'),
-    deleteButton: (index) => list.querySelectorAll('li')[index].querySelector('button'),
+    editButton: (index) => list.querySelectorAll('li')[index].querySelector('button[data-action="edit"]'),
+    deleteButton: (index) => list.querySelectorAll('li')[index].querySelector('button[data-action="delete"]'),
     textOf: (index) => list.querySelectorAll('li')[index].querySelector('span'),
   };
 }
@@ -185,9 +186,43 @@ test('checkbox and Delete button have accessible names from the task text', () =
   const app = setup();
   app.add('Buy milk');
   assert.equal(app.deleteButton(0).getAttribute('aria-label'), 'Delete Buy milk');
-  const label = app.checkbox(0).closest('label');
-  assert.notEqual(label, null);
-  assert.equal(label.textContent, 'Buy milk');
+  assert.equal(app.checkbox(0).getAttribute('aria-label'), 'Buy milk');
+});
+
+test('markup: a task has an Edit button with an accessible name from the task text', () => {
+  const app = setup();
+  app.add('Buy milk');
+  assert.equal(app.editButton(0).textContent, 'Edit');
+  assert.equal(app.editButton(0).getAttribute('aria-label'), 'Edit Buy milk');
+});
+
+test('markup: DOM order is checkbox, text, Edit, Delete', () => {
+  const app = setup();
+  app.add('Buy milk');
+  assert.deepEqual(
+    [...app.items()[0].children],
+    [app.checkbox(0), app.textOf(0), app.editButton(0), app.deleteButton(0)],
+  );
+});
+
+test('markup: clicking Edit changes nothing yet', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.checkbox(0).click();
+  const before = app.list.innerHTML;
+  app.editButton(1).click();
+  assert.equal(app.list.innerHTML, before);
+  assert.equal(app.items().length, 2);
+  assert.equal(app.count.textContent, '1 of 2 completed');
+});
+
+test('markup: clicking the task text does not toggle the task', () => {
+  const app = setup();
+  app.add('One');
+  app.textOf(0).click();
+  assert.equal(app.checkbox(0).checked, false);
+  assert.equal(app.count.textContent, '0 of 1 completed');
 });
 
 test('toggling a task keeps focus on that task\'s checkbox', () => {

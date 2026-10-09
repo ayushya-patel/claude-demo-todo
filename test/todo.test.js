@@ -4,6 +4,7 @@ import {
   addTask,
   toggleTask,
   removeTask,
+  editTask,
   countCompleted,
   formatCount,
 } from '../src/todo.js';
@@ -95,6 +96,50 @@ test('removeTask does not mutate its input', () => {
   const snapshot = structuredClone(tasks);
   removeTask(tasks, tasks[0].id);
   assert.deepEqual(tasks, snapshot);
+});
+
+test('editTask replaces the text of the matching task', () => {
+  const tasks = addTask([], 'Buy milk');
+  const result = editTask(tasks, tasks[0].id, 'Buy oat milk');
+  assert.equal(result[0].text, 'Buy oat milk');
+});
+
+test('editTask trims the text', () => {
+  const tasks = addTask([], 'a');
+  const result = editTask(tasks, tasks[0].id, '  b \t');
+  assert.equal(result[0].text, 'b');
+});
+
+test('editTask rejects empty text by returning the same array', () => {
+  const tasks = addTask([], 'a');
+  assert.equal(editTask(tasks, tasks[0].id, ''), tasks);
+});
+
+test('editTask rejects whitespace-only text by returning the same array', () => {
+  const tasks = addTask([], 'a');
+  assert.equal(editTask(tasks, tasks[0].id, ' \t\n '), tasks);
+  assert.equal(tasks[0].text, 'a');
+});
+
+test('editTask with an unknown id returns the same array', () => {
+  const tasks = addTask([], 'a');
+  assert.equal(editTask(tasks, -1, 'b'), tasks);
+});
+
+test('editTask keeps id and done, and leaves other tasks unchanged', () => {
+  let tasks = addTask(addTask([], 'a'), 'b');
+  tasks = toggleTask(tasks, tasks[0].id);
+  const result = editTask(tasks, tasks[0].id, 'c');
+  assert.deepEqual(result[0], { id: tasks[0].id, text: 'c', done: true });
+  assert.equal(result[1], tasks[1]);
+});
+
+test('editTask does not mutate its input', () => {
+  const tasks = addTask([], 'a');
+  const snapshot = structuredClone(tasks);
+  const result = editTask(tasks, tasks[0].id, 'b');
+  assert.deepEqual(tasks, snapshot);
+  assert.notEqual(result, tasks);
 });
 
 test('countCompleted is 0 of 0 for an empty list', () => {
