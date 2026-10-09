@@ -11,7 +11,7 @@ this module's code and tests use them.
 
 | Path | Params | Query / search params | Returns or renders |
 |---|---|---|---|
-| `/` and `/index.html` (static, from `src/`) | none | none | The same to-do screen as `00000000-build-a-basic-to-do-app`, plus a "Dark mode" toggle button in the header |
+| `/` and `/index.html` (static, from `src/`) | none | none | The same to-do screen as `00000000-build-a-basic-to-do-app`, plus a theme toggle button in the header, labelled only by an emoji (🌙 in light mode, ☀️ in dark mode; accessible name "Dark mode") |
 
 ## Output
 

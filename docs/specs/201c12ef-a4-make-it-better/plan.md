@@ -1,3 +1,5 @@
+Revision 1: the toggle's visible label is only an emoji, 🌙 in light mode and ☀️ in dark mode; no text.
+
 # Plan — Add dark mode toggle with persistent choice
 
 Derived from `spec.md`. This is where implementation details are allowed.
@@ -57,11 +59,18 @@ Approach A. The current theme is **client state owned by the page**: the value o
 is only its persisted copy, read once in `mount` and written on each toggle.
 
 **Markup.** The `<h1>` moves into a new `<header>` at the top of `<main>`, together with
-`<button type="button" id="theme-toggle" aria-pressed="false">Dark mode</button>`.
-The fixed text "Dark mode" plus `aria-pressed` gives the button an accessible name and a
-state screen readers announce ("Dark mode, toggle button, pressed"); the visible text
-does not change. Nothing else in the page moves. The header lays out the heading
-and the button in one row (`display: flex; justify-content: space-between; align-items: center`).
+`<button type="button" id="theme-toggle" aria-label="Dark mode" aria-pressed="false">🌙</button>`.
+The button's visible label is the emoji and nothing else: 🌙 while the page is light
+(the click goes dark), ☀️ while it is dark (the click goes light). Applying a theme sets
+the emoji along with `data-theme` and `aria-pressed`. No text, tooltip (`title`) or
+other icon is shown. Because an emoji alone is not a reliable accessible name (screen
+readers read it as "crescent moon" / "sun"), the button keeps a fixed, invisible
+`aria-label="Dark mode"`; with `aria-pressed` screen readers announce "Dark mode,
+toggle button, pressed" in dark and "not pressed" in light. The label stays fixed while
+the emoji changes, so the name and the pressed state never contradict each other.
+Nothing else in the page moves. The header lays out the heading and the button in one
+row (`display: flex; justify-content: space-between; align-items: center`); the button
+keeps the existing button styling, with the emoji at the button's normal font size.
 The existing `button:focus-visible` rule already gives it a visible focus ring.
 
 **`src/theme.js`** (internal to this module):
@@ -73,10 +82,10 @@ The existing `button:focus-visible` rule already gives it a visible focus ring.
 | `otherTheme(theme)` | `"dark"` → `"light"`, anything else → `"dark"`. |
 
 **`src/app.js`** → `mount(document)` gains, before the first `render()`:
-read the theme via `readTheme(document.defaultView)`, apply it (sets `data-theme` and the
-button's `aria-pressed`), and a `click` listener on the toggle that applies
+read the theme via `readTheme(document.defaultView)`, apply it (sets `data-theme`, the
+button's `aria-pressed` and its emoji, 🌙 or ☀️), and a `click` listener on the toggle that applies
 `otherTheme(current)` and saves it. Applying is synchronous and only sets two
-attributes, so rapid toggling never lags or falls out of step. The to-do code paths are
+attributes and one text node, so rapid toggling never lags or falls out of step. The to-do code paths are
 untouched.
 
 **`src/styles.css`.** `:root` gains `color-scheme: light`; a new
@@ -148,10 +157,11 @@ branch is tested.
   and a throwing `localStorage`; `saveTheme` writes, and swallows a throwing `setItem`;
   `otherTheme` both ways.
 - `test/app.test.js` (jsdom with `url: 'http://localhost/'` where storage is needed):
-  the header contains the toggle with accessible name "Dark mode" and
-  `aria-pressed="false"`, `data-theme="light"` on a fresh load; a click sets
-  `data-theme="dark"`, `aria-pressed="true"` and stores `"dark"`; a second click goes
-  back and stores `"light"`; a page mounted with `"dark"` stored starts dark; with
+  the header contains the toggle with accessible name "Dark mode",
+  `aria-pressed="false"` and text content exactly `🌙`, and `data-theme="light"`, on a
+  fresh load; a click sets `data-theme="dark"`, `aria-pressed="true"`, text content
+  exactly `☀️` and stores `"dark"`; a second click goes back to `🌙` and stores
+  `"light"`; a page mounted with `"dark"` stored starts dark, showing `☀️`; with
   storage unavailable the app starts light and the toggle still switches; add, toggle
   done and delete still work after switching to dark; the dark CSS block covers every
   `:root` variable.
