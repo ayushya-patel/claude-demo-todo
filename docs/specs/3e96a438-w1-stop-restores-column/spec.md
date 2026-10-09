@@ -49,3 +49,10 @@ The footer text format is: "{count} left" where count is the number of to-dos wi
 - Footer count updates in real time as to-do states change (add, complete, delete, uncheck)
 - Footer is visually minimal and does not distract from the main to-do list
 - No console errors occur during normal use
+
+## Contracts
+
+Detail lives in `./contracts/` — `provides.md` and `requires.md`.
+
+- **Provides:** a footer on the existing to-do screen; no API, nothing consumes it.
+- **Requires:** the to-do screen and its task list from the basic to-do app module; no upstream systems.
