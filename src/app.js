@@ -107,6 +107,19 @@ export function mount(document) {
     }
   });
 
+  list.addEventListener('focusout', (event) => {
+    if (!event.target.matches('input.edit') || idOf(event.target) !== editingId) {
+      return;
+    }
+    const id = editingId;
+    editingId = null;
+    const restored = renderTask(tasks.find((task) => task.id === id));
+    event.target.closest('li').replaceWith(restored);
+    if (event.relatedTarget === null) {
+      restored.querySelector('button[data-action="edit"]').focus();
+    }
+  });
+
   list.addEventListener('click', (event) => {
     const editButton = event.target.closest('button[data-action="edit"]');
     if (editButton !== null) {

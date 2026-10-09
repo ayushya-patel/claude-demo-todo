@@ -422,3 +422,128 @@ test('save and cancel: edited markup text renders as text', () => {
   assert.equal(app.list.querySelectorAll('img, b').length, 0);
   assert.equal(app.textOf(0).textContent, '<img src=x onerror=alert(1)><b>bold</b>');
 });
+
+function focusOut(app, target, relatedTarget = null) {
+  target.dispatchEvent(
+    new app.document.defaultView.FocusEvent('focusout', { bubbles: true, relatedTarget }),
+  );
+}
+
+test('focusout: focus leaving to nowhere cancels the edit and focuses the Edit button', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.checkbox(0).click();
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'Changed';
+  focusOut(app, editor);
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.textOf(0).textContent, 'One');
+  assert.equal(app.checkbox(0).checked, true);
+  assert.equal(app.textOf(1).textContent, 'Two');
+  assert.equal(app.count.textContent, '1 of 2 completed');
+  assert.equal(app.document.activeElement, app.editButton(0));
+});
+
+test('focusout: real blur of the edit input cancels the edit', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  app.list.querySelector('input.edit').blur();
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.textOf(0).textContent, 'One');
+});
+
+test('focusout: leaving to another task\'s Delete cancels without stealing focus and the click still deletes', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.editButton(0).click();
+  const target = app.deleteButton(1);
+  focusOut(app, app.list.querySelector('input.edit'), target);
+  target.focus();
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.document.activeElement, target);
+  assert.equal(app.deleteButton(1), target);
+  target.click();
+  assert.equal(app.items().length, 1);
+  assert.equal(app.textOf(0).textContent, 'One');
+  assert.equal(app.count.textContent, '0 of 1 completed');
+});
+
+test('focusout: leaving to another task\'s checkbox cancels and the change still toggles that task', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.editButton(0).click();
+  const target = app.checkbox(1);
+  focusOut(app, app.list.querySelector('input.edit'), target);
+  target.focus();
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.checkbox(1), target);
+  target.click();
+  assert.equal(app.checkbox(1).checked, true);
+  assert.equal(app.checkbox(0).checked, false);
+  assert.equal(app.count.textContent, '1 of 2 completed');
+  assert.equal(app.document.activeElement, app.checkbox(1));
+});
+
+test('focusout: leaving to another task\'s Edit button cancels, then that click edits the other task', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.editButton(0).click();
+  const target = app.editButton(1);
+  focusOut(app, app.list.querySelector('input.edit'), target);
+  target.focus();
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.textOf(0).textContent, 'One');
+  target.click();
+  const editors = app.list.querySelectorAll('input.edit');
+  assert.equal(editors.length, 1);
+  assert.equal(app.items()[1].querySelector('input.edit'), editors[0]);
+  assert.equal(editors[0].value, 'Two');
+  assert.equal(app.document.activeElement, editors[0]);
+});
+
+test('focusout: a stale focusout after Enter or Escape changes nothing', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+
+  app.editButton(0).click();
+  let editor = app.list.querySelector('input.edit');
+  let item = editor.closest('li');
+  editor.value = 'One edited';
+  pressKey(app, editor, 'Enter');
+  focusOut(app, editor);
+  app.list.append(item);
+  focusOut(app, editor);
+  assert.equal(app.items().length, 3);
+  item.remove();
+  assert.equal(app.textOf(0).textContent, 'One edited');
+  assert.equal(app.document.activeElement, app.editButton(0));
+
+  app.editButton(1).click();
+  editor = app.list.querySelector('input.edit');
+  item = editor.closest('li');
+  pressKey(app, editor, 'Escape');
+  app.list.append(item);
+  focusOut(app, editor);
+  item.remove();
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.textOf(1).textContent, 'Two');
+  assert.equal(app.document.activeElement, app.editButton(1));
+});
+
+test('focusout: focus leaving a control that is not the edit input is ignored', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  focusOut(app, app.checkbox(1));
+  focusOut(app, app.editButton(1));
+  assert.equal(app.list.querySelector('input.edit'), editor);
+});
