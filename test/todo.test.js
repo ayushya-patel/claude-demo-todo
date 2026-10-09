@@ -6,6 +6,7 @@ import {
   removeTask,
   countCompleted,
   formatCount,
+  formatTitle,
 } from '../src/todo.js';
 
 test('addTask appends a new open task', () => {
@@ -124,4 +125,11 @@ test('formatCount formats 0 of 0, 3 of 5 and Y of Y', () => {
   assert.equal(formatCount({ completed: 0, total: 0 }), '0 of 0 completed');
   assert.equal(formatCount({ completed: 3, total: 5 }), '3 of 5 completed');
   assert.equal(formatCount({ completed: 4, total: 4 }), '4 of 4 completed');
+});
+
+test('formatTitle shows the remaining count, or all done when none remain', () => {
+  assert.equal(formatTitle({ completed: 0, total: 0 }), 'To-do - all done');
+  assert.equal(formatTitle({ completed: 0, total: 1 }), '(1) To-do');
+  assert.equal(formatTitle({ completed: 1, total: 3 }), '(2) To-do');
+  assert.equal(formatTitle({ completed: 2, total: 2 }), 'To-do - all done');
 });

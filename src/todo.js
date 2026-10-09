@@ -26,3 +26,8 @@ export function countCompleted(tasks) {
 export function formatCount({ completed, total }) {
   return `${completed} of ${total} completed`;
 }
+
+export function formatTitle({ completed, total }) {
+  const remaining = total - completed;
+  return remaining > 0 ? `(${remaining}) To-do` : 'To-do - all done';
+}

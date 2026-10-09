@@ -20,7 +20,7 @@ Ids are `T<number>`, with an optional letter (`T9a`) for a follow-up found mid-b
 ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Files:`, `Accept:` and
 `Depends on:` as written below, and `Files: none` for a task that touches no file.
 
-- [ ] **T1 —** Add the exported pure function `formatTitle({ completed, total })` to `src/todo.js` (next to `formatCount`): `remaining = total - completed`; return `` `(${remaining}) To-do` `` when `remaining > 0`, else `'To-do - all done'`; with unit tests in `test/todo.test.js` for `{0,0}` → `To-do - all done`, `{0,1}` → `(1) To-do`, `{1,3}` → `(2) To-do`, `{2,2}` → `To-do - all done`
+- [x] **T1 —** Add the exported pure function `formatTitle({ completed, total })` to `src/todo.js` (next to `formatCount`): `remaining = total - completed`; return `` `(${remaining}) To-do` `` when `remaining > 0`, else `'To-do - all done'`; with unit tests in `test/todo.test.js` for `{0,0}` → `To-do - all done`, `{0,1}` → `(1) To-do`, `{1,3}` → `(2) To-do`, `{2,2}` → `To-do - all done`
   - Files: `src/todo.js`, `test/todo.test.js`
   - Accept: `node --input-type=module -e "import { formatTitle } from './src/todo.js'; const ok = formatTitle({ completed: 0, total: 0 }) === 'To-do - all done' && formatTitle({ completed: 1, total: 3 }) === '(2) To-do' && formatTitle({ completed: 2, total: 2 }) === 'To-do - all done'; process.exit(ok ? 0 : 1);" && node --test test/todo.test.js`
 - [ ] **T2 —** In `render()` in `src/app.js`, compute `countCompleted(tasks)` once, pass it to `formatCount` for the count line, and assign `formatTitle(counts)` to `document.title` (import `formatTitle` from `./todo.js`), exactly as in plan.md → `app.js` change
