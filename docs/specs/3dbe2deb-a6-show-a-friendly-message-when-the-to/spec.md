@@ -55,3 +55,10 @@ The message text is: "Nothing to do yet — add your first task above"
 - Integration test: add a task to empty list → message disappears
 - Integration test: delete all tasks → message reappears
 - All existing app tests continue to pass
+
+## Contracts
+
+Detail lives in `./contracts/` — `provides.md` and `requires.md`.
+
+- **Provides:** no new surface; the existing to-do screen shows the empty-state message when the list is empty.
+- **Requires:** the to-do screen from `00000000-build-a-basic-to-do-app`; no upstream data.
