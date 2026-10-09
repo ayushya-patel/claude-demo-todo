@@ -31,7 +31,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `test/app.test.js`
   - Accept: `grep -q "(2) To-do" test/app.test.js && grep -q "To-do - all done" test/app.test.js && node --test test/app.test.js`
   - Depends on: T2
-- [ ] **T4 —** Append a `## How it works` section to the end of this ticket's `spec.md` describing the shipped title behaviour (derived from the task list on every render, never stored; the two title forms; the static `<title>To-do</title>` is replaced on the first render), per `/workspace/ai-workflow/skills/flow/SKILL.md`, noting any divergence from plan.md in one line each; do not change any other part of `spec.md`
+- [x] **T4 —** Append a `## How it works` section to the end of this ticket's `spec.md` describing the shipped title behaviour (derived from the task list on every render, never stored; the two title forms; the static `<title>To-do</title>` is replaced on the first render), per `/workspace/ai-workflow/skills/flow/SKILL.md`, noting any divergence from plan.md in one line each; do not change any other part of `spec.md`
   - Files: `docs/specs/5a15cea5-a1-show-the-number-of-remaining-tasks-i/spec.md`
   - Accept: `grep -q "^## How it works" docs/specs/5a15cea5-a1-show-the-number-of-remaining-tasks-i/spec.md`
   - Depends on: T3

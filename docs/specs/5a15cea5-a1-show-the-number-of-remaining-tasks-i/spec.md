@@ -63,3 +63,13 @@ Detail lives in `./contracts/` — `provides.md` and `requires.md`.
 
 - **Provides:** no new route or API; the existing to-do screen's tab title shows the remaining count.
 - **Requires:** nothing upstream; extends the to-do app's own code in place.
+
+## How it works
+
+**Where the title comes from.** The page title is not stored anywhere. Every time the page redraws the list (once on load, then after each add, tick, untick or delete), it works out how many tasks are not done from the task list and sets the browser tab title from that, in the same step that rewrites the `X of Y completed` line. The title therefore cannot drift from the list.
+
+**The two forms.** When at least one task is not done, the title is `(N) To-do`, where N is the number of tasks not done, for example `(2) To-do`. When none are left, including when the list is empty, it is `To-do - all done` (an ordinary hyphen). Task text never goes into the title.
+
+**First load.** `index.html` still carries the fixed `<title>To-do</title>`. The first draw on load replaces it, so a fresh page immediately shows `To-do - all done` and the fixed title is only seen if the script does not run.
+
+**Divergences.** None from `plan.md`: approach A shipped as planned (a small formatting function in `src/todo.js`, called from the redraw in `src/app.js`).
