@@ -6,10 +6,21 @@ export function mount(document) {
   const list = document.getElementById('todo-list');
   const count = document.getElementById('todo-count');
   let tasks = [];
+  let editingId = null;
 
   function renderTask(task) {
     const item = document.createElement('li');
     item.dataset.id = String(task.id);
+
+    if (task.id === editingId) {
+      const editor = document.createElement('input');
+      editor.type = 'text';
+      editor.className = 'edit';
+      editor.value = task.text;
+      editor.setAttribute('aria-label', `Edit ${task.text}`);
+      item.append(editor);
+      return item;
+    }
 
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
@@ -38,6 +49,9 @@ export function mount(document) {
   function render() {
     list.replaceChildren(...tasks.map(renderTask));
     count.textContent = formatCount(countCompleted(tasks));
+    const editor = list.querySelector('input.edit');
+    editor?.focus();
+    editor?.select();
   }
 
   function idOf(target) {
@@ -52,13 +66,30 @@ export function mount(document) {
   });
 
   list.addEventListener('change', (event) => {
+    if (event.target.type !== 'checkbox') {
+      return;
+    }
     const id = idOf(event.target);
     tasks = toggleTask(tasks, id);
     render();
     list.querySelector(`li[data-id="${id}"] input`).focus();
   });
 
+  list.addEventListener('dblclick', (event) => {
+    if (!event.target.matches('li > span')) {
+      return;
+    }
+    editingId = idOf(event.target);
+    render();
+  });
+
   list.addEventListener('click', (event) => {
+    const editButton = event.target.closest('button[data-action="edit"]');
+    if (editButton !== null) {
+      editingId = idOf(editButton);
+      render();
+      return;
+    }
     const button = event.target.closest('button[data-action="delete"]');
     if (button === null) {
       return;

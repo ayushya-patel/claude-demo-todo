@@ -205,16 +205,93 @@ test('markup: DOM order is checkbox, text, Edit, Delete', () => {
   );
 });
 
-test('markup: clicking Edit changes nothing yet', () => {
+test('edit mode: double-clicking the text enters edit mode for that task only', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.textOf(1).dispatchEvent(new app.document.defaultView.MouseEvent('dblclick', { bubbles: true }));
+  const editors = app.list.querySelectorAll('input.edit');
+  assert.equal(editors.length, 1);
+  assert.equal(app.items()[1].querySelector('input.edit'), editors[0]);
+  assert.equal(editors[0].type, 'text');
+  assert.equal(editors[0].value, 'Two');
+  assert.equal(app.items()[1].children.length, 1);
+  assert.equal(app.items()[0].querySelector('input.edit'), null);
+  assert.equal(app.textOf(0).textContent, 'One');
+  assert.equal(app.editButton(0).textContent, 'Edit');
+});
+
+test('edit mode: clicking Edit enters edit mode for that task only', () => {
   const app = setup();
   app.add('One');
   app.add('Two');
   app.checkbox(0).click();
-  const before = app.list.innerHTML;
-  app.editButton(1).click();
-  assert.equal(app.list.innerHTML, before);
-  assert.equal(app.items().length, 2);
+  app.editButton(0).click();
+  const editors = app.list.querySelectorAll('input.edit');
+  assert.equal(editors.length, 1);
+  assert.equal(app.items()[0].querySelector('input.edit'), editors[0]);
+  assert.equal(editors[0].value, 'One');
+  assert.equal(app.items()[1].querySelector('input.edit'), null);
+  assert.equal(app.textOf(1).textContent, 'Two');
   assert.equal(app.count.textContent, '1 of 2 completed');
+});
+
+test('edit mode: the input is focused with its whole text selected', () => {
+  const app = setup();
+  app.add('Buy milk');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  assert.equal(app.document.activeElement, editor);
+  assert.equal(editor.selectionStart, 0);
+  assert.equal(editor.selectionEnd, 'Buy milk'.length);
+});
+
+test('edit mode: double-clicking the text does not toggle the task', () => {
+  const app = setup();
+  app.add('One');
+  app.textOf(0).click();
+  app.textOf(0).click();
+  app.textOf(0).dispatchEvent(new app.document.defaultView.MouseEvent('dblclick', { bubbles: true }));
+  assert.equal(app.list.querySelectorAll('input.edit').length, 1);
+  assert.equal(app.count.textContent, '0 of 1 completed');
+  assert.equal(app.items()[0].querySelector('input[type="checkbox"]'), null);
+});
+
+test('edit mode: a change on the edit input does not toggle the task', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'One edited';
+  editor.dispatchEvent(new app.document.defaultView.Event('change', { bubbles: true }));
+  assert.equal(app.list.querySelector('input.edit'), editor);
+  assert.equal(app.count.textContent, '0 of 1 completed');
+});
+
+test('edit mode: a double-click that is not on a task text does not enter edit mode', () => {
+  const app = setup();
+  app.add('One');
+  const dblclick = () => new app.document.defaultView.MouseEvent('dblclick', { bubbles: true });
+  app.list.dispatchEvent(dblclick());
+  app.items()[0].dispatchEvent(dblclick());
+  app.editButton(0).dispatchEvent(dblclick());
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+});
+
+test('edit mode: the edit input has an accessible name from the task text', () => {
+  const app = setup();
+  app.add('Buy milk');
+  app.editButton(0).click();
+  assert.equal(app.list.querySelector('input.edit').getAttribute('aria-label'), 'Edit Buy milk');
+});
+
+test('edit mode: a double-click on the edit input stays in edit mode', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.dispatchEvent(new app.document.defaultView.MouseEvent('dblclick', { bubbles: true }));
+  assert.equal(app.list.querySelector('input.edit'), editor);
 });
 
 test('markup: clicking the task text does not toggle the task', () => {
