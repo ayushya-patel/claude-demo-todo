@@ -97,3 +97,68 @@ test('the toggle has no tabindex, so the keyboard reaches it', () => {
   const app = setup();
   assert.equal(app.button.hasAttribute('tabindex'), false);
 });
+
+function setupAt(url, seed) {
+  const dom = new JSDOM(html, { url });
+  if (seed !== undefined) {
+    dom.window.localStorage.setItem('todo-theme', seed);
+  }
+  const { document } = dom.window;
+  mountThemeToggle(document);
+  return {
+    dom,
+    document,
+    button: document.getElementById('theme-toggle'),
+    theme: () => document.documentElement.dataset.theme,
+    saved: () => dom.window.localStorage.getItem('todo-theme'),
+  };
+}
+
+test('todo-theme: a click stores "dark", then "light"', () => {
+  const app = setupAt('http://localhost/');
+  assert.equal(app.saved(), null);
+  app.button.click();
+  assert.equal(app.saved(), 'dark');
+  app.button.click();
+  assert.equal(app.saved(), 'light');
+});
+
+test('todo-theme: a saved "dark" starts dark with the sun icon and aria-pressed="true"', () => {
+  assertDark(setupAt('http://localhost/', 'dark'));
+});
+
+test('todo-theme: a saved "light" starts light', () => {
+  assertLight(setupAt('http://localhost/', 'light'));
+});
+
+test('todo-theme: a missing value starts light', () => {
+  assertLight(setupAt('http://localhost/'));
+});
+
+test('todo-theme: an unknown value "blue" starts light', () => {
+  assertLight(setupAt('http://localhost/', 'blue'));
+});
+
+test('todo-theme: unavailable storage (about:blank) starts light and still toggles', () => {
+  const dom = new JSDOM(html);
+  assert.throws(() => dom.window.localStorage);
+  const { document } = dom.window;
+  mountThemeToggle(document);
+  const app = { button: document.getElementById('theme-toggle'), theme: () => document.documentElement.dataset.theme };
+  assertLight(app);
+  app.button.click();
+  assertDark(app);
+  app.button.click();
+  assertLight(app);
+});
+
+test('todo-theme: a throwing setItem does not stop the toggle', () => {
+  const app = setupAt('http://localhost/');
+  app.dom.window.Storage.prototype.setItem = () => {
+    throw new Error('quota');
+  };
+  app.button.click();
+  assertDark(app);
+  app.button.click();
+  assertLight(app);
+});
