@@ -547,3 +547,49 @@ test('focusout: focus leaving a control that is not the edit input is ignored', 
   focusOut(app, app.editButton(1));
   assert.equal(app.list.querySelector('input.edit'), editor);
 });
+
+function pressComposingKey(app, target, key, { isComposing, keyCode }) {
+  const event = new app.document.defaultView.KeyboardEvent('keydown', { key, isComposing, bubbles: true });
+  Object.defineProperty(event, 'keyCode', { value: keyCode });
+  target.dispatchEvent(event);
+}
+
+test('ime: a composing Enter does not save and keeps edit mode', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'One edited';
+  pressComposingKey(app, editor, 'Enter', { isComposing: true, keyCode: 13 });
+  assert.equal(app.list.querySelector('input.edit'), editor);
+  assert.equal(editor.value, 'One edited');
+  assert.equal(app.document.activeElement, editor);
+
+  pressKey(app, editor, 'Enter');
+  assert.equal(app.textOf(0).textContent, 'One edited');
+});
+
+test('ime: a composing Escape does not cancel the edit', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'One edited';
+  pressComposingKey(app, editor, 'Escape', { isComposing: true, keyCode: 27 });
+  assert.equal(app.list.querySelector('input.edit'), editor);
+  assert.equal(editor.value, 'One edited');
+  assert.equal(app.document.activeElement, editor);
+});
+
+test('ime: keyCode 229 is ignored even when isComposing is false', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'One edited';
+  pressComposingKey(app, editor, 'Enter', { isComposing: false, keyCode: 229 });
+  pressComposingKey(app, editor, 'Escape', { isComposing: false, keyCode: 229 });
+  assert.equal(app.list.querySelector('input.edit'), editor);
+  assert.equal(editor.value, 'One edited');
+  assert.equal(app.document.activeElement, editor);
+});

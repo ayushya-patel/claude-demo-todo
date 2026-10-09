@@ -20,11 +20,11 @@ memory (see `plan.md` → Data).
 
 ## Other modules
 
-None. The change lives inside the to-do app itself (`src/`), not in a sibling module.
+One. This change extends the to-do app module in place; it does not stand alone.
 
 | Module | Depends on | Listed in their provides? |
 |---|---|---|
-| — | — | — |
+| `docs/specs/00000000-build-a-basic-to-do-app` | The to-do screen and its in-memory task list, which this change extends in place. On change: this module's tests fail in `npm test`. | Yes — the `/index.html` screen row |
 
 ## Environment
 

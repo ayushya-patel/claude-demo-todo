@@ -90,7 +90,7 @@ export function mount(document) {
   });
 
   list.addEventListener('keydown', (event) => {
-    if (!event.target.matches('input.edit')) {
+    if (!event.target.matches('input.edit') || event.isComposing || event.keyCode === 229) {
       return;
     }
     const id = idOf(event.target);
