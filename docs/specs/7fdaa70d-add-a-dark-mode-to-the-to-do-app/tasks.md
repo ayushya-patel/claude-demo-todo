@@ -20,7 +20,7 @@ Ids are `T<number>`, with an optional letter (`T9a`) for a follow-up found mid-b
 ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Files:`, `Accept:` and
 `Depends on:` as written below, and `Files: none` for a task that touches no file.
 
-- [ ] **T1 —** Add the theme markup to `src/index.html`: `<html lang="en" data-theme="light">`; as the first child of `<main>` the button `<button type="button" id="theme-toggle" class="theme-toggle" aria-label="Dark mode" aria-pressed="false">🌙</button>`; `placeholder="Enter a task..."` on `#todo-input`. Do not touch the module script yet. `test/app.test.js` must stay green.
+- [x] **T1 —** Add the theme markup to `src/index.html`: `<html lang="en" data-theme="light">`; as the first child of `<main>` the button `<button type="button" id="theme-toggle" class="theme-toggle" aria-label="Dark mode" aria-pressed="false">🌙</button>`; `placeholder="Enter a task..."` on `#todo-input`. Do not touch the module script yet. `test/app.test.js` must stay green.
   - Files: `src/index.html`
   - Accept: `grep -q '<html lang="en" data-theme="light">' src/index.html && grep -q '<button type="button" id="theme-toggle" class="theme-toggle" aria-label="Dark mode" aria-pressed="false">🌙</button>' src/index.html && node --test test/app.test.js`
 - [ ] **T2 —** Create `src/theme.js` exporting `mountThemeToggle(document)` that wires the in-page toggle (no storage yet): on mount it syncs the icon and `aria-pressed` from `document.documentElement.dataset.theme`; on each click it sets `data-theme` to `dark` when it was not `dark` and to `light` otherwise, sets the button text to `☀️` in dark / `🌙` in light and `aria-pressed` to `"true"` in dark / `"false"` in light. The attribute is the only state (no JS variable copy). Add `test/theme.test.js` (jsdom loading `src/index.html`) covering plan.md → Test strategy, first group: initial light state, name "Dark mode" and `type="button"`, one click → dark, second click → light, several rapid clicks alternate, adding and completing a task with `mount` still works in dark (`done` class applied), no `tabindex` on the button.
@@ -43,7 +43,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `src/styles.css`
   - Accept: `grep -q '\.theme-toggle' src/styles.css && grep -q 'position: absolute' src/styles.css && grep -q 'var(--color-on-accent)' src/styles.css && node --test --test-name-pattern='styles.css' test/theme.test.js`
   - Depends on: T5
-- [ ] **T7 —** Update `docs/specs/00000000-build-a-basic-to-do-app/contracts/provides.md`: the `/` and `/index.html` row also renders the sun/moon theme toggle (added by `7fdaa70d-add-a-dark-mode-to-the-to-do-app`), the Output row lists `theme.js`, and the Input section notes the theme toggle click and the browser-local `todo-theme` preference (never sent anywhere).
+- [x] **T7 —** Update `docs/specs/00000000-build-a-basic-to-do-app/contracts/provides.md`: the `/` and `/index.html` row also renders the sun/moon theme toggle (added by `7fdaa70d-add-a-dark-mode-to-the-to-do-app`), the Output row lists `theme.js`, and the Input section notes the theme toggle click and the browser-local `todo-theme` preference (never sent anywhere).
   - Files: `docs/specs/00000000-build-a-basic-to-do-app/contracts/provides.md`
   - Accept: `grep -q 'theme toggle' docs/specs/00000000-build-a-basic-to-do-app/contracts/provides.md && grep -q 'theme.js' docs/specs/00000000-build-a-basic-to-do-app/contracts/provides.md`
 
