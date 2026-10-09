@@ -647,3 +647,56 @@ test('Enter on a span with repeat (held key) does not start an edit', () => {
   keydown(app, app.textOf(0), 'Enter');
   assert.notEqual(app.list.querySelector('input.edit'), null);
 });
+
+test('shows the empty message and a 0/0 ring on mount', () => {
+  const app = setup();
+  assert.equal(app.document.getElementById('todo-empty').hidden, false);
+  assert.equal(app.document.getElementById('todo-ring-label').textContent, '0/0');
+});
+
+test('adding a task hides the empty message and updates the ring to 0/1', () => {
+  const app = setup();
+  app.add('One');
+  assert.equal(app.document.getElementById('todo-empty').hidden, true);
+  assert.equal(app.document.getElementById('todo-ring-label').textContent, '0/1');
+});
+
+test('toggling the only task updates the ring to 1/1', () => {
+  const app = setup();
+  app.add('One');
+  app.checkbox(0).click();
+  assert.equal(app.document.getElementById('todo-ring-label').textContent, '1/1');
+});
+
+test('deleting the last task shows the empty message again', () => {
+  const app = setup();
+  app.add('One');
+  app.deleteButton(0).click();
+  assert.equal(app.document.getElementById('todo-empty').hidden, false);
+  assert.equal(app.document.getElementById('todo-ring-label').textContent, '0/0');
+});
+
+test('the ring is hidden from assistive technology', () => {
+  const app = setup();
+  assert.equal(app.document.getElementById('todo-ring').getAttribute('aria-hidden'), 'true');
+});
+
+test('the input has a placeholder and keeps its "New task" label', () => {
+  const app = setup();
+  assert.equal(app.input.getAttribute('placeholder'), 'Add a new task…');
+  assert.equal(app.document.querySelector('label[for="todo-input"]').textContent, 'New task');
+});
+
+test('--progress is 0.5 with 1 of 2 tasks done', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.checkbox(0).click();
+  assert.equal(app.document.getElementById('todo-ring').style.getPropertyValue('--progress'), '0.5');
+});
+
+test('Delete buttons carry the del class', () => {
+  const app = setup();
+  app.add('One');
+  assert.ok(app.deleteButton(0).classList.contains('del'));
+});

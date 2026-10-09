@@ -1,0 +1,23 @@
+{
+  "round": 2,
+  "options": [
+    {
+      "key": "a",
+      "name": "Light glass",
+      "summary": "Bright iOS-style liquid glass: a frosted, see-through card floating over a soft pastel wallpaper, glass capsule input and Add button, iOS-blue round checkboxes, progress ring.",
+      "file": "round-2/option-a.html"
+    },
+    {
+      "key": "b",
+      "name": "Dark glass",
+      "summary": "Night-mode liquid glass: smoky translucent panels over a deep, glowing wallpaper; every task is its own floating glass capsule; progress bar under the title.",
+      "file": "round-2/option-b.html"
+    },
+    {
+      "key": "c",
+      "name": "iOS Reminders style",
+      "summary": "Feels like an iPhone app: big left-aligned title, inset grouped list, and the input lives in a floating glass bar pinned to the bottom like an iOS toolbar.",
+      "file": "round-2/option-c.html"
+    }
+  ]
+}

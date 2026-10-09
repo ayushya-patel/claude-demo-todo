@@ -34,3 +34,7 @@ export function countCompleted(tasks) {
 export function formatCount({ completed, total }) {
   return `${completed} of ${total} completed`;
 }
+
+export function progress({ completed, total }) {
+  return total === 0 ? 0 : completed / total;
+}

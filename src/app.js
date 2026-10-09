@@ -1,10 +1,13 @@
-import { addTask, toggleTask, removeTask, editTask, countCompleted, formatCount } from './todo.js';
+import { addTask, toggleTask, removeTask, editTask, countCompleted, formatCount, progress } from './todo.js';
 
 export function mount(document) {
   const form = document.getElementById('todo-form');
   const input = document.getElementById('todo-input');
   const list = document.getElementById('todo-list');
   const count = document.getElementById('todo-count');
+  const ring = document.getElementById('todo-ring');
+  const ringLabel = document.getElementById('todo-ring-label');
+  const empty = document.getElementById('todo-empty');
   let tasks = [];
   let editingId = null;
 
@@ -33,16 +36,25 @@ export function mount(document) {
 
     const remove = document.createElement('button');
     remove.type = 'button';
+    remove.className = 'del';
     remove.textContent = 'Delete';
     remove.setAttribute('aria-label', `Delete ${task.text}`);
 
-    item.append(checkbox, text, remove);
+    const row = document.createElement('div');
+    row.className = 'task';
+    row.append(checkbox, text);
+
+    item.append(row, remove);
     return item;
   }
 
   function render() {
     list.replaceChildren(...tasks.map(renderTask));
-    count.textContent = formatCount(countCompleted(tasks));
+    const counts = countCompleted(tasks);
+    count.textContent = formatCount(counts);
+    ringLabel.textContent = `${counts.completed}/${counts.total}`;
+    ring.style.setProperty('--progress', String(progress(counts)));
+    empty.hidden = tasks.length > 0;
   }
 
   function idOf(target) {
