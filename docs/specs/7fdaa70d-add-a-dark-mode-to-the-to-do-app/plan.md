@@ -1,3 +1,4 @@
+Revision 2: re-checked against the approved spec at `bf4b1e6`; the round-3 designs (pure black, sepia) are not the spec's chosen design, so the plan still follows `designs/round-2/option-a.html` and is otherwise unchanged.
 Revision 1: the chosen theme is now saved in `localStorage` and restored on reload (light on first visit or when storage is unavailable).
 
 # Plan — Add dark mode to the to-do app
@@ -8,6 +9,13 @@ Chosen design: [`designs/round-2/option-a.html`](designs/round-2/option-a.html)
 (spec Verification 8). Where the design file and the spec's written Behaviour
 disagree, the spec wins. Each such point is listed under **Decisions where the
 design and the spec differ** below.
+
+Design round 3 (`designs/round-3/option-a.html`, pure black `#000000`, and
+`option-b.html`, sepia `#2a2415` / `#d4c5a9`) was generated after the spec was
+written. The approved spec still names `designs/round-2/option-a.html` and fixes the
+charcoal palette (`#1a1a1a` / `#f0f0f0`), which neither round-3 option uses, so this
+plan does not follow round 3. Building either round-3 palette would need a spec
+change first.
 
 ## Contracts
 
