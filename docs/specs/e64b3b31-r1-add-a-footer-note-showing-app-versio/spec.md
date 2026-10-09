@@ -43,3 +43,10 @@ The app adds a `<footer>` element to index.html containing the text "v1.0.0" (pr
 - Navigate to the app and confirm the footer appears at the bottom showing "v1.0.0" in grey text with font-size under 12px
 - Run `npm test` and confirm 100% coverage across all metrics (lines, branches, functions)
 - Verify the footer styling matches the existing design language
+
+## Contracts
+
+Detail lives in `./contracts/` — `provides.md` and `requires.md`.
+
+- **Provides:** the existing to-do screen gains a version footer; no new route or API, nothing consumes it.
+- **Requires:** the app version from `package.json` (checked by the tests), and the to-do screen of `00000000-build-a-basic-to-do-app`.
