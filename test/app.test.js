@@ -9,6 +9,7 @@ const html = readFileSync(new URL('../src/index.html', import.meta.url), 'utf8')
 function setup() {
   const dom = new JSDOM(html);
   const { document } = dom.window;
+  document.hasFocus = () => true;
   mount(document);
   const input = document.getElementById('todo-input');
   const form = document.getElementById('todo-form');
@@ -26,7 +27,8 @@ function setup() {
     },
     items: () => [...list.querySelectorAll('li')],
     checkbox: (index) => list.querySelectorAll('li')[index].querySelector('input[type="checkbox"]'),
-    deleteButton: (index) => list.querySelectorAll('li')[index].querySelector('button'),
+    editButton: (index) => list.querySelectorAll('li')[index].querySelector('button[data-action="edit"]'),
+    deleteButton: (index) => list.querySelectorAll('li')[index].querySelector('button[data-action="delete"]'),
     textOf: (index) => list.querySelectorAll('li')[index].querySelector('span'),
   };
 }
@@ -185,9 +187,129 @@ test('checkbox and Delete button have accessible names from the task text', () =
   const app = setup();
   app.add('Buy milk');
   assert.equal(app.deleteButton(0).getAttribute('aria-label'), 'Delete Buy milk');
-  const label = app.checkbox(0).closest('label');
-  assert.notEqual(label, null);
-  assert.equal(label.textContent, 'Buy milk');
+  assert.equal(app.checkbox(0).getAttribute('aria-label'), 'Buy milk');
+});
+
+test('markup: a task has an Edit button with an accessible name from the task text', () => {
+  const app = setup();
+  app.add('Buy milk');
+  assert.equal(app.editButton(0).textContent, 'Edit');
+  assert.equal(app.editButton(0).getAttribute('aria-label'), 'Edit Buy milk');
+});
+
+test('markup: DOM order is checkbox, text, Edit, Delete', () => {
+  const app = setup();
+  app.add('Buy milk');
+  assert.deepEqual(
+    [...app.items()[0].children],
+    [app.checkbox(0), app.textOf(0), app.editButton(0), app.deleteButton(0)],
+  );
+});
+
+test('edit mode: double-clicking the text enters edit mode for that task only', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.textOf(1).dispatchEvent(new app.document.defaultView.MouseEvent('dblclick', { bubbles: true }));
+  const editors = app.list.querySelectorAll('input.edit');
+  assert.equal(editors.length, 1);
+  assert.equal(app.items()[1].querySelector('input.edit'), editors[0]);
+  assert.equal(editors[0].type, 'text');
+  assert.equal(editors[0].value, 'Two');
+  assert.equal(app.items()[1].children.length, 1);
+  assert.equal(app.items()[0].querySelector('input.edit'), null);
+  assert.equal(app.textOf(0).textContent, 'One');
+  assert.equal(app.editButton(0).textContent, 'Edit');
+});
+
+test('edit mode: clicking Edit enters edit mode for that task only', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.checkbox(0).click();
+  app.editButton(0).click();
+  const editors = app.list.querySelectorAll('input.edit');
+  assert.equal(editors.length, 1);
+  assert.equal(app.items()[0].querySelector('input.edit'), editors[0]);
+  assert.equal(editors[0].value, 'One');
+  assert.equal(app.items()[1].querySelector('input.edit'), null);
+  assert.equal(app.textOf(1).textContent, 'Two');
+  assert.equal(app.count.textContent, '1 of 2 completed');
+});
+
+test('edit mode: the input is focused with its whole text selected', () => {
+  const app = setup();
+  app.add('Buy milk');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  assert.equal(app.document.activeElement, editor);
+  assert.equal(editor.selectionStart, 0);
+  assert.equal(editor.selectionEnd, 'Buy milk'.length);
+});
+
+test('edit mode: double-click selects the whole text', () => {
+  const app = setup();
+  app.add('Buy milk');
+  app.textOf(0).dispatchEvent(new app.document.defaultView.MouseEvent('dblclick', { bubbles: true }));
+  const editor = app.list.querySelector('input.edit');
+  assert.equal(editor.selectionStart, 0);
+  assert.equal(editor.selectionEnd, 'Buy milk'.length);
+});
+
+test('edit mode: double-clicking the text does not toggle the task', () => {
+  const app = setup();
+  app.add('One');
+  app.textOf(0).click();
+  app.textOf(0).click();
+  app.textOf(0).dispatchEvent(new app.document.defaultView.MouseEvent('dblclick', { bubbles: true }));
+  assert.equal(app.list.querySelectorAll('input.edit').length, 1);
+  assert.equal(app.count.textContent, '0 of 1 completed');
+  assert.equal(app.items()[0].querySelector('input[type="checkbox"]'), null);
+});
+
+test('edit mode: a change on the edit input does not toggle the task', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'One edited';
+  editor.dispatchEvent(new app.document.defaultView.Event('change', { bubbles: true }));
+  assert.equal(app.list.querySelector('input.edit'), editor);
+  assert.equal(app.count.textContent, '0 of 1 completed');
+});
+
+test('edit mode: a double-click that is not on a task text does not enter edit mode', () => {
+  const app = setup();
+  app.add('One');
+  const dblclick = () => new app.document.defaultView.MouseEvent('dblclick', { bubbles: true });
+  app.list.dispatchEvent(dblclick());
+  app.items()[0].dispatchEvent(dblclick());
+  app.editButton(0).dispatchEvent(dblclick());
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+});
+
+test('edit mode: the edit input has an accessible name from the task text', () => {
+  const app = setup();
+  app.add('Buy milk');
+  app.editButton(0).click();
+  assert.equal(app.list.querySelector('input.edit').getAttribute('aria-label'), 'Edit Buy milk');
+});
+
+test('edit mode: a double-click on the edit input stays in edit mode', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.dispatchEvent(new app.document.defaultView.MouseEvent('dblclick', { bubbles: true }));
+  assert.equal(app.list.querySelector('input.edit'), editor);
+});
+
+test('markup: clicking the task text does not toggle the task', () => {
+  const app = setup();
+  app.add('One');
+  app.textOf(0).click();
+  assert.equal(app.checkbox(0).checked, false);
+  assert.equal(app.count.textContent, '0 of 1 completed');
 });
 
 test('toggling a task keeps focus on that task\'s checkbox', () => {
@@ -219,4 +341,300 @@ test('deleting the last remaining task focuses the text input', () => {
   app.deleteButton(0).focus();
   app.deleteButton(0).click();
   assert.equal(app.document.activeElement, app.input);
+});
+
+function pressKey(app, target, key) {
+  target.dispatchEvent(new app.document.defaultView.KeyboardEvent('keydown', { key, bubbles: true }));
+}
+
+test('save and cancel: Enter saves the trimmed text, leaves edit mode and focuses the Edit button', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.checkbox(1).click();
+  app.editButton(1).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = '  Two edited  ';
+  pressKey(app, editor, 'Enter');
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.textOf(1).textContent, 'Two edited');
+  assert.equal(app.textOf(0).textContent, 'One');
+  assert.equal(app.items().length, 2);
+  assert.equal(app.checkbox(1).checked, true);
+  assert.equal(app.textOf(1).classList.contains('done'), true);
+  assert.equal(app.count.textContent, '1 of 2 completed');
+  assert.equal(app.document.activeElement, app.editButton(1));
+});
+
+test('save and cancel: Enter with whitespace-only text keeps edit mode, the text, focus and selection, and shows no alert', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  const window = app.document.defaultView;
+  let alerts = 0;
+  window.alert = () => {
+    alerts += 1;
+  };
+  editor.value = '   ';
+  editor.setSelectionRange(1, 1);
+  pressKey(app, editor, 'Enter');
+  assert.equal(app.list.querySelector('input.edit'), editor);
+  assert.equal(editor.value, '   ');
+  assert.equal(app.document.activeElement, editor);
+  assert.equal(editor.selectionStart, 0);
+  assert.equal(editor.selectionEnd, 3);
+  assert.equal(alerts, 0);
+
+  editor.value = 'One again';
+  pressKey(app, editor, 'Enter');
+  assert.equal(app.textOf(0).textContent, 'One again');
+});
+
+test('save and cancel: Escape restores the original text and focuses the Edit button', () => {
+  const app = setup();
+  app.add('One');
+  app.checkbox(0).click();
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'Changed';
+  pressKey(app, editor, 'Escape');
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.textOf(0).textContent, 'One');
+  assert.equal(app.checkbox(0).checked, true);
+  assert.equal(app.count.textContent, '1 of 1 completed');
+  assert.equal(app.document.activeElement, app.editButton(0));
+});
+
+test('save and cancel: other keys do nothing and keydown outside the edit input is ignored', () => {
+  const app = setup();
+  app.add('One');
+  pressKey(app, app.list, 'Escape');
+  pressKey(app, app.textOf(0), 'Enter');
+  pressKey(app, app.checkbox(0), 'Escape');
+  assert.equal(app.textOf(0).textContent, 'One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'Typing';
+  pressKey(app, editor, 'a');
+  assert.equal(app.list.querySelector('input.edit'), editor);
+  assert.equal(editor.value, 'Typing');
+  assert.equal(app.document.activeElement, editor);
+});
+
+test('save and cancel: edited markup text renders as text', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = '<img src=x onerror=alert(1)><b>bold</b>';
+  pressKey(app, editor, 'Enter');
+  assert.equal(app.list.querySelectorAll('img, b').length, 0);
+  assert.equal(app.textOf(0).textContent, '<img src=x onerror=alert(1)><b>bold</b>');
+});
+
+function focusOut(app, target, relatedTarget = null) {
+  target.dispatchEvent(
+    new app.document.defaultView.FocusEvent('focusout', { bubbles: true, relatedTarget }),
+  );
+}
+
+test('focusout: focus leaving to nowhere cancels the edit and focuses the Edit button', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.checkbox(0).click();
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'Changed';
+  focusOut(app, editor);
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.textOf(0).textContent, 'One');
+  assert.equal(app.checkbox(0).checked, true);
+  assert.equal(app.textOf(1).textContent, 'Two');
+  assert.equal(app.count.textContent, '1 of 2 completed');
+  assert.equal(app.document.activeElement, app.editButton(0));
+});
+
+test('focusout: real blur of the edit input cancels the edit', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  app.list.querySelector('input.edit').blur();
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.textOf(0).textContent, 'One');
+});
+
+test('focusout: leaving to another task\'s Delete cancels without stealing focus and the click still deletes', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.editButton(0).click();
+  const target = app.deleteButton(1);
+  focusOut(app, app.list.querySelector('input.edit'), target);
+  target.focus();
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.document.activeElement, target);
+  assert.equal(app.deleteButton(1), target);
+  target.click();
+  assert.equal(app.items().length, 1);
+  assert.equal(app.textOf(0).textContent, 'One');
+  assert.equal(app.count.textContent, '0 of 1 completed');
+});
+
+test('focusout: leaving to another task\'s checkbox cancels and the change still toggles that task', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.editButton(0).click();
+  const target = app.checkbox(1);
+  focusOut(app, app.list.querySelector('input.edit'), target);
+  target.focus();
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.checkbox(1), target);
+  target.click();
+  assert.equal(app.checkbox(1).checked, true);
+  assert.equal(app.checkbox(0).checked, false);
+  assert.equal(app.count.textContent, '1 of 2 completed');
+  assert.equal(app.document.activeElement, app.checkbox(1));
+});
+
+test('focusout: leaving to another task\'s Edit button cancels, then that click edits the other task', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.editButton(0).click();
+  const target = app.editButton(1);
+  focusOut(app, app.list.querySelector('input.edit'), target);
+  target.focus();
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.textOf(0).textContent, 'One');
+  target.click();
+  const editors = app.list.querySelectorAll('input.edit');
+  assert.equal(editors.length, 1);
+  assert.equal(app.items()[1].querySelector('input.edit'), editors[0]);
+  assert.equal(editors[0].value, 'Two');
+  assert.equal(app.document.activeElement, editors[0]);
+});
+
+test('focusout: a stale focusout after Enter or Escape changes nothing', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+
+  app.editButton(0).click();
+  let editor = app.list.querySelector('input.edit');
+  let item = editor.closest('li');
+  editor.value = 'One edited';
+  pressKey(app, editor, 'Enter');
+  focusOut(app, editor);
+  app.list.append(item);
+  focusOut(app, editor);
+  assert.equal(app.items().length, 3);
+  item.remove();
+  assert.equal(app.textOf(0).textContent, 'One edited');
+  assert.equal(app.document.activeElement, app.editButton(0));
+
+  app.editButton(1).click();
+  editor = app.list.querySelector('input.edit');
+  item = editor.closest('li');
+  pressKey(app, editor, 'Escape');
+  app.list.append(item);
+  focusOut(app, editor);
+  item.remove();
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.textOf(1).textContent, 'Two');
+  assert.equal(app.document.activeElement, app.editButton(1));
+});
+
+test('focusout: focus leaving a control that is not the edit input is ignored', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  focusOut(app, app.checkbox(1));
+  focusOut(app, app.editButton(1));
+  assert.equal(app.list.querySelector('input.edit'), editor);
+});
+
+test('window blur: focusout while the window is unfocused keeps the input, its typed value and edit mode', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'Typing';
+  app.document.hasFocus = () => false;
+  focusOut(app, editor);
+  assert.equal(app.list.querySelector('input.edit'), editor);
+  assert.equal(editor.value, 'Typing');
+  assert.equal(app.document.activeElement, editor);
+
+  app.document.hasFocus = () => true;
+  pressKey(app, editor, 'Enter');
+  assert.equal(app.textOf(0).textContent, 'Typing');
+});
+
+test('window blur: after the window unfocused, a focusout with window focus still cancels', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'Typing';
+  app.document.hasFocus = () => false;
+  focusOut(app, editor);
+  assert.equal(app.list.querySelector('input.edit'), editor);
+
+  app.document.hasFocus = () => true;
+  focusOut(app, editor);
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.textOf(0).textContent, 'One');
+  assert.equal(app.document.activeElement, app.editButton(0));
+});
+
+function pressComposingKey(app, target, key, { isComposing, keyCode }) {
+  const event = new app.document.defaultView.KeyboardEvent('keydown', { key, isComposing, bubbles: true });
+  Object.defineProperty(event, 'keyCode', { value: keyCode });
+  target.dispatchEvent(event);
+}
+
+test('ime: a composing Enter does not save and keeps edit mode', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'One edited';
+  pressComposingKey(app, editor, 'Enter', { isComposing: true, keyCode: 13 });
+  assert.equal(app.list.querySelector('input.edit'), editor);
+  assert.equal(editor.value, 'One edited');
+  assert.equal(app.document.activeElement, editor);
+
+  pressKey(app, editor, 'Enter');
+  assert.equal(app.textOf(0).textContent, 'One edited');
+});
+
+test('ime: a composing Escape does not cancel the edit', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'One edited';
+  pressComposingKey(app, editor, 'Escape', { isComposing: true, keyCode: 27 });
+  assert.equal(app.list.querySelector('input.edit'), editor);
+  assert.equal(editor.value, 'One edited');
+  assert.equal(app.document.activeElement, editor);
+});
+
+test('ime: keyCode 229 is ignored even when isComposing is false', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'One edited';
+  pressComposingKey(app, editor, 'Enter', { isComposing: false, keyCode: 229 });
+  pressComposingKey(app, editor, 'Escape', { isComposing: false, keyCode: 229 });
+  assert.equal(app.list.querySelector('input.edit'), editor);
+  assert.equal(editor.value, 'One edited');
+  assert.equal(app.document.activeElement, editor);
 });

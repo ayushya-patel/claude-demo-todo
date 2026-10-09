@@ -4,7 +4,8 @@ This module's **public boundary**. Everything another module — in this repo or
 another team's repo — is allowed to depend on.
 
 Anything not listed here is internal and may change without notice. In particular the
-exports of `src/todo.js` and `src/app.js` are internal to this module; only its tests
+exports of `src/todo.js` and `src/app.js` are not public; only this module's tests and
+`docs/specs/7437b765-test-let-users-edit-a-task`, which extends those files in place,
 import them.
 
 ## Routes / endpoints
@@ -18,6 +19,7 @@ import them.
 | Route / endpoint | Returns | Type |
 |---|---|---|
 | `/index.html` | Static HTML page with its `styles.css`, `app.js`, `todo.js` | none — no data API |
+| (client state) task list | in-memory array of tasks, shape { id, text, done }, no API; extended in place by docs/specs/7437b765-test-let-users-edit-a-task | none — no data API |
 
 ## Input
 
@@ -34,4 +36,4 @@ on the page and stays in memory.
 
 | Module | Depends on | Why |
 |---|---|---|
-| — | — | Nothing consumes this module; it is the only module in the repo. |
+| docs/specs/7437b765-test-let-users-edit-a-task | The to-do screen and its in-memory task list | Extends the screen in place with task editing. |
