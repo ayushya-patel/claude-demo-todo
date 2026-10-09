@@ -9,6 +9,7 @@ const html = readFileSync(new URL('../src/index.html', import.meta.url), 'utf8')
 function setup() {
   const dom = new JSDOM(html);
   const { document } = dom.window;
+  document.hasFocus = () => true;
   mount(document);
   const input = document.getElementById('todo-input');
   const form = document.getElementById('todo-form');
@@ -546,6 +547,41 @@ test('focusout: focus leaving a control that is not the edit input is ignored', 
   focusOut(app, app.checkbox(1));
   focusOut(app, app.editButton(1));
   assert.equal(app.list.querySelector('input.edit'), editor);
+});
+
+test('window blur: focusout while the window is unfocused keeps the input, its typed value and edit mode', () => {
+  const app = setup();
+  app.add('One');
+  app.add('Two');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'Typing';
+  app.document.hasFocus = () => false;
+  focusOut(app, editor);
+  assert.equal(app.list.querySelector('input.edit'), editor);
+  assert.equal(editor.value, 'Typing');
+  assert.equal(app.document.activeElement, editor);
+
+  app.document.hasFocus = () => true;
+  pressKey(app, editor, 'Enter');
+  assert.equal(app.textOf(0).textContent, 'Typing');
+});
+
+test('window blur: after the window unfocused, a focusout with window focus still cancels', () => {
+  const app = setup();
+  app.add('One');
+  app.editButton(0).click();
+  const editor = app.list.querySelector('input.edit');
+  editor.value = 'Typing';
+  app.document.hasFocus = () => false;
+  focusOut(app, editor);
+  assert.equal(app.list.querySelector('input.edit'), editor);
+
+  app.document.hasFocus = () => true;
+  focusOut(app, editor);
+  assert.equal(app.list.querySelectorAll('input.edit').length, 0);
+  assert.equal(app.textOf(0).textContent, 'One');
+  assert.equal(app.document.activeElement, app.editButton(0));
 });
 
 function pressComposingKey(app, target, key, { isComposing, keyCode }) {

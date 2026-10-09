@@ -111,6 +111,9 @@ export function mount(document) {
     if (!event.target.matches('input.edit') || idOf(event.target) !== editingId) {
       return;
     }
+    if (!document.hasFocus()) {
+      return;
+    }
     const id = editingId;
     editingId = null;
     const restored = renderTask(tasks.find((task) => task.id === id));

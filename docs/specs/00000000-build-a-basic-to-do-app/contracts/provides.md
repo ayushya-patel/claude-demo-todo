@@ -34,4 +34,4 @@ on the page and stays in memory.
 
 | Module | Depends on | Why |
 |---|---|---|
-| — | — | Nothing consumes this module; it is the only module in the repo. |
+| — | — | Consumed by docs/specs/7437b765-test-let-users-edit-a-task, which extends the screen in place. |

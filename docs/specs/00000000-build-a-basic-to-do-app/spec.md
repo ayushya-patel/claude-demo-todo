@@ -18,7 +18,7 @@ Users need a simple, lightweight to-do app to manage tasks in the browser. They 
 ## Out of scope
 
 - Persistence (localStorage or database)
-- Editing existing tasks
+- Editing existing tasks (added later by docs/specs/7437b765-test-let-users-edit-a-task)
 - Task priority or categories
 - Keyboard shortcuts or advanced UX patterns
 - Mobile-specific design
@@ -90,7 +90,7 @@ Detail lives in `./contracts/` — `provides.md` and `requires.md`.
 - Pressing a task's Delete button: that task is removed, and focus moves to the Delete button now at the removed task's position (the previous task's when the last one was removed), or to the text input when the list is empty.
 - A task is always identified by its identifier, never by its position in the list; an unknown identifier changes nothing.
 
-**Display.** After every change the whole list is rebuilt from the task list; nothing is patched in place. Each task shows a labelled checkbox, its text (shown as plain text, struck through when done) and a Delete button labelled with that task's text.
+**Display.** After every change the whole list is rebuilt from the task list; nothing is patched in place. Each task shows a checkbox named by its text, its text (shown as plain text, struck through when done), an Edit button and a Delete button; editing is described in docs/specs/7437b765-test-let-users-edit-a-task.
 
 **Count.** The count is not stored. After every change it is recomputed from the task list and shown as, for example, `3 of 5 completed`, so it cannot drift from the list.
 
