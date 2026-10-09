@@ -4,7 +4,7 @@
 
 ## Problem
 
-The current to-do app requires users to click an Add button or press Enter to add tasks. The requirement is to remove the Add button and allow task addition with zero clicks and zero typing, while tasks survive a page reload, all without storing data anywhere.
+The current to-do app requires users to click an Add button or press Enter to add tasks. The requirement is to remove the Add button and allow task addition with zero clicks and zero typing, while tasks survive a page reload.
 
 ## Outcomes
 
@@ -19,14 +19,12 @@ The current to-do app requires users to click an Add button or press Enter to ad
 - Task priority or categories
 - Mobile-specific design
 - Keyboard shortcuts
-- Persistent external storage (localStorage, database, backend)
 
 ## Constraints
 
 - No Add button visible
 - Zero clicks and zero typing required to add tasks
-- No persistent storage allowed (no localStorage, database, or server-side storage)
-- Tasks must survive a page reload despite no storage
+- Tasks must survive a page reload
 
 ## Behaviour
 
@@ -52,11 +50,16 @@ The current to-do app requires users to click an Add button or press Enter to ad
 - Updates in real-time as tasks are marked done/undone
 - Resets as tasks are added or deleted
 
+### Persistence
+- Tasks are stored so they survive a page reload
+- Task state (completed/not completed) is also persisted
+- Deletions are persisted
+
 ### Edge cases
 
 | Scenario | Behaviour |
 |---|---|
-| Page reload | Tasks are restored despite no storage mechanism |
+| Page reload | Tasks are restored from storage |
 | No user action | Tasks are automatically added without clicks or typing |
 | Completed task count after reload | Count matches the task list state after restore |
 | All tasks deleted then reload | Lists reflect the delete state across reloads |
@@ -76,8 +79,4 @@ The current to-do app requires users to click an Add button or press Enter to ad
 
 ## Notes
 
-The requirements still contain a core contradiction:
-- Tasks must persist through reload without any storage mechanism (no localStorage, sessionStorage, IndexedDB, database, or server)
-- Tasks cannot be added without source input (text entry, selection, or user action)
-
-Clarification needed before implementation: How should tasks be added without user input? What mechanism provides task content? How do tasks survive reload without any storage?
+Clarification still needed before implementation: How should tasks be added without user input? What mechanism provides task content? (Examples: generate placeholder tasks on first load, fetch from an API, use predefined data, etc.)
