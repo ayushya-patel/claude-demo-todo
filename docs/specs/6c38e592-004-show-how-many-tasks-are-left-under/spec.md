@@ -53,3 +53,15 @@ Detail lives in `./contracts/` — `provides.md` and `requires.md`.
 
 - **Provides:** the same single static screen; `#todo-count` now shows tasks left. No API, nothing consumes it.
 - **Requires:** the `/` screen's `#todo-count` and `render()` cycle from 00000000; no upstream data.
+
+## How it works
+
+**Where the number comes from.** The count is never stored. Every time the list is redrawn — on first load, after adding a task, after ticking or unticking a checkbox, and after deleting a task — the open tasks in the current list are counted and the wording is chosen from that number. The text appears in the line under the list.
+
+**What it says.** No open task (empty list, or every task done): the line is empty, so nothing shows. One open task: "1 task left". Two or more: "N tasks left".
+
+**Screen readers.** The counter line is still a polite live region, so the new text is announced after each change. The line stays in the page when empty rather than being hidden, so the first "1 task left" after an empty list is announced too.
+
+**Editing.** Changing a task's text redraws only that row and leaves the counter untouched; an edit cannot change how many tasks are open.
+
+**What changed from before.** The line used to read "X of Y completed"; that text is gone. The progress ring in the header still shows completed/total. No markup or styles changed; the empty paragraph keeps its top margin. The shipped code matches the plan (approach A) with no divergence.
