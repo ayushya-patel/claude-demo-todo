@@ -47,3 +47,9 @@ The counter updates automatically whenever tasks are added, marked complete/inco
 - [ ] Counter updates when a task is marked incomplete
 - [ ] Counter updates when a task is deleted
 - [ ] Counter uses proper pluralization in all cases
+## Contracts
+
+Detail lives in `./contracts/` — `provides.md` and `requires.md`.
+
+- **Provides:** the same single static screen; `#todo-count` now shows tasks left. No API, nothing consumes it.
+- **Requires:** the `/` screen's `#todo-count` and `render()` cycle from 00000000; no upstream data.
