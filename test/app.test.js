@@ -683,7 +683,7 @@ test('the ring is hidden from assistive technology', () => {
 
 test('the input has a placeholder and keeps its "New task" label', () => {
   const app = setup();
-  assert.equal(app.input.getAttribute('placeholder'), 'Add a new task…');
+  assert.equal(app.input.getAttribute('placeholder'), 'What needs doing?');
   assert.equal(app.document.querySelector('label[for="todo-input"]').textContent, 'New task');
 });
 
