@@ -1,4 +1,4 @@
-import { addTask, toggleTask, removeTask, editTask, countCompleted, formatCount, progress } from './todo.js';
+import { addTask, toggleTask, removeTask, editTask, countCompleted, formatRemaining, progress } from './todo.js';
 
 export function mount(document) {
   const form = document.getElementById('todo-form');
@@ -51,7 +51,7 @@ export function mount(document) {
   function render() {
     list.replaceChildren(...tasks.map(renderTask));
     const counts = countCompleted(tasks);
-    count.textContent = formatCount(counts);
+    count.textContent = formatRemaining(counts);
     ringLabel.textContent = `${counts.completed}/${counts.total}`;
     ring.style.setProperty('--progress', String(progress(counts)));
     empty.hidden = tasks.length > 0;

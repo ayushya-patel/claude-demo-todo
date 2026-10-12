@@ -31,10 +31,10 @@ function setup() {
   };
 }
 
-test('renders an empty list and "0 of 0 completed" on mount', () => {
+test('renders an empty list and an empty count on mount', () => {
   const app = setup();
   assert.equal(app.items().length, 0);
-  assert.equal(app.count.textContent, '0 of 0 completed');
+  assert.equal(app.count.textContent, '');
 });
 
 test('submit adds a task with an unchecked checkbox and a Delete button, and clears the input', () => {
@@ -45,7 +45,7 @@ test('submit adds a task with an unchecked checkbox and a Delete button, and cle
   assert.equal(app.checkbox(0).checked, false);
   assert.equal(app.deleteButton(0).textContent, 'Delete');
   assert.equal(app.input.value, '');
-  assert.equal(app.count.textContent, '0 of 1 completed');
+  assert.equal(app.count.textContent, '1 task left');
 });
 
 test('adds a task via the Add button', () => {
@@ -55,7 +55,7 @@ test('adds a task via the Add button', () => {
   assert.equal(app.items().length, 1);
   assert.equal(app.textOf(0).textContent, 'Buy milk');
   assert.equal(app.input.value, '');
-  assert.equal(app.count.textContent, '0 of 1 completed');
+  assert.equal(app.count.textContent, '1 task left');
 });
 
 test('submit calls preventDefault', () => {
@@ -70,7 +70,7 @@ test('a whitespace-only task is rejected and the input is cleared', () => {
   app.add('   ');
   assert.equal(app.items().length, 0);
   assert.equal(app.input.value, '');
-  assert.equal(app.count.textContent, '0 of 0 completed');
+  assert.equal(app.count.textContent, '');
 });
 
 test('an empty submit adds nothing', () => {
@@ -88,21 +88,21 @@ test('checking and unchecking a task toggles the done class and the count', () =
   assert.equal(app.checkbox(0).checked, true);
   assert.equal(app.textOf(0).classList.contains('done'), true);
   assert.equal(app.textOf(1).classList.contains('done'), false);
-  assert.equal(app.count.textContent, '1 of 2 completed');
+  assert.equal(app.count.textContent, '1 task left');
 
   app.checkbox(0).click();
   assert.equal(app.checkbox(0).checked, false);
   assert.equal(app.textOf(0).classList.contains('done'), false);
-  assert.equal(app.count.textContent, '0 of 2 completed');
+  assert.equal(app.count.textContent, '2 tasks left');
 });
 
-test('marking every task done shows "Y of Y completed"', () => {
+test('marking every task done clears the count', () => {
   const app = setup();
   app.add('One');
   app.add('Two');
   app.checkbox(0).click();
   app.checkbox(1).click();
-  assert.equal(app.count.textContent, '2 of 2 completed');
+  assert.equal(app.count.textContent, '');
 });
 
 test('deleting an open task removes it and keeps the completed count', () => {
@@ -113,27 +113,27 @@ test('deleting an open task removes it and keeps the completed count', () => {
   app.deleteButton(0).click();
   assert.equal(app.items().length, 1);
   assert.equal(app.textOf(0).textContent, 'Two');
-  assert.equal(app.count.textContent, '1 of 1 completed');
+  assert.equal(app.count.textContent, '');
 });
 
 test('deleting a done task decrements the completed count', () => {
   const app = setup();
   app.add('One');
   app.checkbox(0).click();
-  assert.equal(app.count.textContent, '1 of 1 completed');
+  assert.equal(app.count.textContent, '');
   app.deleteButton(0).click();
   assert.equal(app.items().length, 0);
-  assert.equal(app.count.textContent, '0 of 0 completed');
+  assert.equal(app.count.textContent, '');
 });
 
-test('deleting all tasks resets the count to "0 of 0 completed"', () => {
+test('deleting all tasks clears the count', () => {
   const app = setup();
   app.add('One');
   app.add('Two');
   app.deleteButton(0).click();
   app.deleteButton(0).click();
   assert.equal(app.items().length, 0);
-  assert.equal(app.count.textContent, '0 of 0 completed');
+  assert.equal(app.count.textContent, '');
 });
 
 test('a click on the list that is not on a Delete button changes nothing', () => {
@@ -142,7 +142,7 @@ test('a click on the list that is not on a Delete button changes nothing', () =>
   app.list.click();
   app.items()[0].click();
   assert.equal(app.items().length, 1);
-  assert.equal(app.count.textContent, '0 of 1 completed');
+  assert.equal(app.count.textContent, '1 task left');
 });
 
 test('rapid adds and deletes keep the list and count consistent', () => {
@@ -156,22 +156,65 @@ test('rapid adds and deletes keep the list and count consistent', () => {
   }
   assert.equal(app.items().length, 10);
   assert.equal(app.items().filter((li) => li.querySelector('input').checked).length, 10);
-  assert.equal(app.count.textContent, '10 of 10 completed');
+  assert.equal(app.count.textContent, '');
   assert.deepEqual(
     app.items().map((li) => li.querySelector('span').textContent),
     ['Task 0', 'Task 2', 'Task 4', 'Task 6', 'Task 8', 'Task 10', 'Task 12', 'Task 14', 'Task 16', 'Task 18'],
   );
 });
 
-test('the spec scenario: 5 added, 3 done → "3 of 5"; delete one done → "2 of 4"', () => {
+test('the spec scenario: 5 added, 3 done → "2 tasks left"; delete one done → still "2 tasks left"', () => {
   const app = setup();
   ['a', 'b', 'c', 'd', 'e'].forEach((text) => app.add(text));
   app.checkbox(0).click();
   app.checkbox(1).click();
   app.checkbox(2).click();
-  assert.equal(app.count.textContent, '3 of 5 completed');
+  assert.equal(app.count.textContent, '2 tasks left');
   app.deleteButton(1).click();
-  assert.equal(app.count.textContent, '2 of 4 completed');
+  assert.equal(app.count.textContent, '2 tasks left');
+});
+
+test('a second add shows "2 tasks left"', () => {
+  const app = setup();
+  app.add('One');
+  assert.equal(app.count.textContent, '1 task left');
+  app.add('Two');
+  assert.equal(app.count.textContent, '2 tasks left');
+});
+
+test('completing the only open task clears the count and unchecking it shows "1 task left"', () => {
+  const app = setup();
+  app.add('One');
+  app.checkbox(0).click();
+  assert.equal(app.count.textContent, '');
+  app.checkbox(0).click();
+  assert.equal(app.count.textContent, '1 task left');
+});
+
+test('5 tasks with 2 done show "3 tasks left"', () => {
+  const app = setup();
+  ['a', 'b', 'c', 'd', 'e'].forEach((text) => app.add(text));
+  app.checkbox(0).click();
+  app.checkbox(1).click();
+  assert.equal(app.count.textContent, '3 tasks left');
+});
+
+test('deleting an open task decrements the tasks-left count', () => {
+  const app = setup();
+  ['a', 'b', 'c'].forEach((text) => app.add(text));
+  app.deleteButton(0).click();
+  assert.equal(app.count.textContent, '2 tasks left');
+  app.deleteButton(0).click();
+  assert.equal(app.count.textContent, '1 task left');
+});
+
+test('deleting a done task leaves the tasks-left count unchanged', () => {
+  const app = setup();
+  ['a', 'b', 'c'].forEach((text) => app.add(text));
+  app.checkbox(0).click();
+  assert.equal(app.count.textContent, '2 tasks left');
+  app.deleteButton(0).click();
+  assert.equal(app.count.textContent, '2 tasks left');
 });
 
 test('task text containing markup renders as text', () => {
@@ -308,7 +351,7 @@ test('edit mode: a change event from the edit input does not toggle the task', (
   const field = app.list.querySelector('input.edit');
   field.dispatchEvent(new app.document.defaultView.Event('change', { bubbles: true }));
   assert.equal(app.checkbox(0).checked, false);
-  assert.equal(app.count.textContent, '0 of 1 completed');
+  assert.equal(app.count.textContent, '1 task left');
   assert.equal(app.list.querySelector('input.edit'), field);
 });
 
@@ -319,7 +362,7 @@ test('edit mode: works on a completed task and keeps the count', () => {
   dblclick(app, app.textOf(0));
   assert.equal(app.list.querySelector('input.edit').value, 'Buy milk');
   assert.equal(app.checkbox(0).checked, true);
-  assert.equal(app.count.textContent, '1 of 1 completed');
+  assert.equal(app.count.textContent, '');
 });
 
 function startEditing(app, index, value) {
@@ -385,7 +428,7 @@ test('saves keep a done task done and an open task open, and the count unchanged
   assert.equal(app.textOf(0).classList.contains('done'), true);
   assert.equal(app.checkbox(1).checked, false);
   assert.equal(app.textOf(1).classList.contains('done'), false);
-  assert.equal(app.count.textContent, '1 of 2 completed');
+  assert.equal(app.count.textContent, '1 task left');
 });
 
 test('saves and cancels return focus to the task\'s span', () => {
@@ -508,7 +551,7 @@ test('mousedown on the editing row\'s checkbox cancels the edit, then the click 
   assert.equal(app.list.querySelector('input.edit'), null);
   assert.equal(app.textOf(0).textContent, 'Buy milk');
   assert.equal(app.checkbox(0).checked, true);
-  assert.equal(app.count.textContent, '1 of 1 completed');
+  assert.equal(app.count.textContent, '');
 });
 
 test('mousedown on the editing row\'s Delete cancels the edit, then the click deletes the task', () => {
@@ -570,7 +613,7 @@ test('other row: blurring the edit into another row\'s checkbox keeps that check
   assert.equal(app.textOf(0).textContent, 'Edited');
   checkboxB.click();
   assert.equal(app.checkbox(1).checked, true);
-  assert.equal(app.count.textContent, '1 of 2 completed');
+  assert.equal(app.count.textContent, '1 task left');
 });
 
 test('other row: blurring the edit into another row\'s Delete keeps that button, and its click deletes the row', () => {
@@ -599,7 +642,7 @@ test('finishing an edit: count text is not rewritten, and only the edited row is
   assert.notEqual(app.items()[0], rowA);
   assert.equal(app.items()[1], rowB);
   assert.equal(app.count.firstChild, countNode);
-  assert.equal(app.count.textContent, '1 of 2 completed');
+  assert.equal(app.count.textContent, '1 task left');
 });
 
 test('focusout focuses the span only when relatedTarget is null or inside the same row', () => {
