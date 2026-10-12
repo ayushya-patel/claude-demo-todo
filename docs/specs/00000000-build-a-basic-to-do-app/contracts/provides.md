@@ -11,7 +11,7 @@ import them.
 
 | Path | Params | Query / search params | Returns or renders |
 |---|---|---|---|
-| `/` and `/index.html` (static, from `src/`) | none | none | The to-do screen: add form, task list, `X of Y completed` count, a decorative progress ring (`completed/total`), and an empty-state message when there are no tasks; the screen also lets the user edit a task's text inline (see [edit a task's text](../../61c68857-let-people-edit-a-task-s-text/spec.md)) |
+| `/` and `/index.html` (static, from `src/`) | none | none | The to-do screen: add form, task list, tasks-left count (`1 task left` / `N tasks left`, empty when no task is open; see [show how many tasks are left](../../6c38e592-004-show-how-many-tasks-are-left-under/spec.md)), a decorative progress ring (`completed/total`), and an empty-state message when there are no tasks; the screen also lets the user edit a task's text inline (see [edit a task's text](../../61c68857-let-people-edit-a-task-s-text/spec.md)) |
 
 ## Output
 

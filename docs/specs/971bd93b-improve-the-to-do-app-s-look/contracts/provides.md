@@ -11,7 +11,7 @@ Anything not listed here is internal. The exports of `src/todo.js` (including th
 
 | Path | Params | Query / search params | Returns or renders |
 |---|---|---|---|
-| `/` and `/index.html` (static, from `src/`) | none | none | The to-do screen in the Light glass style: add form, task list, progress ring (`completed/total`, decorative), empty-state message when there are no tasks, `X of Y completed` count |
+| `/` and `/index.html` (static, from `src/`) | none | none | The to-do screen in the Light glass style: add form, task list, progress ring (`completed/total`, decorative), empty-state message when there are no tasks, tasks-left count (`1 task left` / `N tasks left`, empty when no task is open) |
 
 ## Output
 

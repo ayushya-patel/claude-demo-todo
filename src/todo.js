@@ -35,6 +35,14 @@ export function formatCount({ completed, total }) {
   return `${completed} of ${total} completed`;
 }
 
+export function formatRemaining({ completed, total }) {
+  const remaining = total - completed;
+  if (remaining === 0) {
+    return '';
+  }
+  return remaining === 1 ? '1 task left' : `${remaining} tasks left`;
+}
+
 export function progress({ completed, total }) {
   return total === 0 ? 0 : completed / total;
 }
