@@ -35,3 +35,4 @@ on the page and stays in memory.
 | Module | Depends on | Why |
 |---|---|---|
 | `971bd93b-improve-the-to-do-app-s-look` | The `/` screen and its ids (`#todo-form`, `#todo-input`, `#todo-list`, `#todo-count`) | Restyles it in place. |
+| `6c38e592-004-show-how-many-tasks-are-left-under` | The `/` screen's `#todo-count` element | Shows the tasks-left count in it. |

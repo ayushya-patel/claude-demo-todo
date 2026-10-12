@@ -105,7 +105,7 @@ test('marking every task done clears the count', () => {
   assert.equal(app.count.textContent, '');
 });
 
-test('deleting an open task removes it and keeps the completed count', () => {
+test('deleting an open task removes it and leaves the tasks-left count at zero', () => {
   const app = setup();
   app.add('One');
   app.add('Two');
@@ -116,7 +116,7 @@ test('deleting an open task removes it and keeps the completed count', () => {
   assert.equal(app.count.textContent, '');
 });
 
-test('deleting a done task decrements the completed count', () => {
+test('deleting a done task leaves the zero tasks-left count unchanged', () => {
   const app = setup();
   app.add('One');
   app.checkbox(0).click();

@@ -22,7 +22,7 @@ list on every render.
 
 | Module | Depends on | Listed in their provides? |
 |---|---|---|
-| `00000000-build-a-basic-to-do-app` | The `/` screen's `#todo-count` element and the `render()` cycle that writes it. If missing or renamed — throw: `mount` fails and the DOM tests go red | yes — the `/` route row; updated in this build to describe the tasks-left count |
+| `00000000-build-a-basic-to-do-app` | The `/` screen's `#todo-count` element, which is redrawn whenever the list changes. If missing or renamed — throw: `mount` fails and the DOM tests go red | yes — the `/` route row; updated in this build to describe the tasks-left count |
 
 ## Environment
 
