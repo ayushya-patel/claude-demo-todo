@@ -23,7 +23,7 @@ ai-workflow task-pipeline scripts (`waves`, `brief`) read this format: keep `Fil
   - Files: `src/app.js`, `test/app.test.js`
   - Accept: `grep -q 'formatRemaining(counts)' src/app.js && node --test test/app.test.js`
   - Depends on: T1
-- [ ] **T3 —** Remove the now-unused `formatCount` export from `src/todo.js` and its import and test (`formatCount formats 0 of 0, 3 of 5 and Y of Y`) from `test/todo.test.js`
+- [x] **T3 —** Remove the now-unused `formatCount` export from `src/todo.js` and its import and test (`formatCount formats 0 of 0, 3 of 5 and Y of Y`) from `test/todo.test.js`
   - Files: `src/todo.js`, `test/todo.test.js`
   - Accept: `! grep -n 'formatCount' src/todo.js src/app.js test/todo.test.js && node --test test/todo.test.js`
   - Depends on: T2

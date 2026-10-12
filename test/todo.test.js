@@ -6,7 +6,6 @@ import {
   removeTask,
   editTask,
   countCompleted,
-  formatCount,
   formatRemaining,
   progress,
 } from '../src/todo.js';
@@ -166,12 +165,6 @@ test('counts follow add, toggle and remove', () => {
 
   tasks = removeTask(tasks, tasks[3].id);
   assert.deepEqual(countCompleted(tasks), { completed: 2, total: 3 });
-});
-
-test('formatCount formats 0 of 0, 3 of 5 and Y of Y', () => {
-  assert.equal(formatCount({ completed: 0, total: 0 }), '0 of 0 completed');
-  assert.equal(formatCount({ completed: 3, total: 5 }), '3 of 5 completed');
-  assert.equal(formatCount({ completed: 4, total: 4 }), '4 of 4 completed');
 });
 
 test('formatRemaining is empty with no open task, singular for 1, plural otherwise', () => {

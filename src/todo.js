@@ -31,10 +31,6 @@ export function countCompleted(tasks) {
   };
 }
 
-export function formatCount({ completed, total }) {
-  return `${completed} of ${total} completed`;
-}
-
 export function formatRemaining({ completed, total }) {
   const remaining = total - completed;
   if (remaining === 0) {
